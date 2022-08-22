@@ -23,7 +23,9 @@
         <javax-annotation-version>1.3.2</javax-annotation-version>
         <commons-lang3-version>3.11</commons-lang3-version>
         <sonar.coverage.exclusions>
-            **/BnplApiReferenceApplication.java
+            **/BnplApiReferenceApplication.java,
+            **/com/mastercard/installments/bnpl/api/reference/application/configuration/ApiConfiguration.java,
+            **/com/mastercard/installments/bnpl/api/reference/application/controller/MerchantsParticipationController.java     
         </sonar.coverage.exclusions>
         <sonar.organization>mastercard</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -142,9 +144,9 @@
                 <version>0.8.6</version>
                 <configuration>
                     <excludes>
-                        <exclude>
-                            com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication
-                        </exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication</exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.MerchantsParticipationController</exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.configuration.ApiConfiguration</exclude>
                     </excludes>
                 </configuration>
                 <executions>
