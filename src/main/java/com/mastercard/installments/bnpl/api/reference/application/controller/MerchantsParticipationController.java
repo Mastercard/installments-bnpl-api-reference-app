@@ -34,8 +34,8 @@ class MerchantsParticipationController {
 
 
     @GetMapping("/merchants-participations")
-    public MerchantParticipation getMerchantsParticipations(@RequestParam(value = "card_product_code") String cardProductCode, @RequestParam(value = "country_code") String countryCode, @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset, @RequestParam(value = "limit", required = false, defaultValue = "500") Integer limit) throws ServiceException {
-        return merchantParticipationService.getMerchantsParticipation(cardProductCode, countryCode, offset, limit);
+    public MerchantParticipation getMerchantsParticipations(@RequestParam(value = "card_product_code") String cardProductCode, @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset, @RequestParam(value = "limit", required = false, defaultValue = "500") Integer limit) throws ServiceException {
+        return merchantParticipationService.getMerchantsParticipation(cardProductCode, offset, limit);
     }
 
 

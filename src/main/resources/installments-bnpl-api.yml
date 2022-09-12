@@ -35,7 +35,6 @@ paths:
       operationId: getMerchantsParticipations
       parameters:
         - $ref: '#/components/parameters/card_product_code'
-        - $ref: '#/components/parameters/country_code'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/limit'
 
@@ -64,18 +63,6 @@ components:
         enum: [ETA,ETB,ETC,ETD,ETE,ETF,ETG,SPP,SPS]
         pattern: ^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|SPP|SPS)$
       example: SPS
-
-    country_code:
-      in: query
-      name: country_code
-      description: Country code for which merchant participation data is requested.
-      required: false
-      schema:
-        type: string
-        minLength: 3
-        maxLength: 3
-        pattern: '^[A-Za-z]{3}$'
-      example: USA
 
     offset:
       in: query
@@ -360,7 +347,7 @@ components:
           maxLength: 300
           description: Legally registered name of the merchant.
           pattern: '^.{1,300}'
-          example: Wallmart
+          example: Walmart
         dbaName:
           type: string
           minLength: 1
@@ -398,7 +385,7 @@ components:
         customerId: 9870152892
         duns: 9870152892
         acceptorIds: ["54331", "123456"]
-        companyName: Wallmart
+        companyName: Walmart
         dbaName: ACME
         customerReferenceUrlAddress: https://www.acme-company.com
         addressLineOne: 600 WEST
@@ -501,7 +488,7 @@ components:
             acceptorIds:
               - 54331
               - 123456
-            companyName: Wallmart
+            companyName: Walmart
             dbaName: ACME
             companyUrl: www.momentum-bike.com
             country: USA
