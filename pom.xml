@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mastercard.installments</groupId>
-    <artifactId>bnpl-api-reference-application</artifactId>
+    <artifactId>installments-bnpl-api-reference-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>bnpl-api-reference-application</name>
-    <description>Demo project for Spring Boot</description>
+    <name>installments-bnpl-api-reference-app</name>
+    <description>Installments Bnpl Api Reference App</description>
     <properties>
         <java.version>11</java.version>
         <oauth1-signer-version>1.5.2</oauth1-signer-version>
@@ -29,6 +29,8 @@
             **/com/mastercard/installments/bnpl/api/reference/application/configuration/*,
             **/com/mastercard/installments/bnpl/api/reference/application/util/*
         </sonar.coverage.exclusions>
+        <sonar.organization>mastercard</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencies>
         <dependency>
