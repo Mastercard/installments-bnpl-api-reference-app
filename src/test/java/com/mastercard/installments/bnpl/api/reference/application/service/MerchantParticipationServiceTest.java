@@ -53,10 +53,11 @@ class MerchantParticipationServiceTest {
     @DisplayName("getMerchantsParticipation - Success")
     void getMerchantsParticipations() throws ApiException, ServiceException {
 
-        when(merchantsParticipationApi.getMerchantsParticipations(anyString(), anyInt(),
+        when(merchantsParticipationApi.getMerchantsParticipations(anyString(), anyString(), anyInt(),
                                                                   anyInt())).thenReturn(merchantParticipation());
 
         MerchantParticipation merchantsParticipation = merchantParticipationService.getMerchantsParticipation("ETA",
+                                                                                                              "USA",
                                                                                                               0, 500);
         assertNotNull(merchantsParticipation);
     }
@@ -66,11 +67,11 @@ class MerchantParticipationServiceTest {
     void getMerchantsParticipationsThrowsException() throws Exception {
 
         ApiException apiException = new ApiException("ApiException", null, 400, null, json.serialize(getErrorDetail()));
-        when(merchantsParticipationApi.getMerchantsParticipations(anyString(), anyInt(),
+        when(merchantsParticipationApi.getMerchantsParticipations(anyString(), anyString(), anyInt(),
                                                                   anyInt())).thenThrow(apiException);
 
         Assertions.assertThrows(ServiceException.class,
-                                () -> merchantParticipationService.getMerchantsParticipation("XYZ", 0, 500));
+                                () -> merchantParticipationService.getMerchantsParticipation("XYZ", "USA", 0, 500));
 
     }
 

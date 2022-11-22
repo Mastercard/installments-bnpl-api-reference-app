@@ -39,13 +39,13 @@ public class MerchantParticipationService {
     }
 
 
-    public MerchantParticipation getMerchantsParticipation(String cardProductCode, Integer offset, Integer limit) throws ServiceException {
+    public MerchantParticipation getMerchantsParticipation(String cardProductCode, String countryCode, Integer offset, Integer limit) throws ServiceException {
 
         log.info("Calling Merchants Participation API");
 
         try {
             MerchantParticipation merchantsParticipations = merchantsParticipationApi.getMerchantsParticipations(
-                    cardProductCode, offset, limit);
+                    cardProductCode, countryCode, offset, limit);
 
             log.info("Merchants Participation API call successful, returning response");
 

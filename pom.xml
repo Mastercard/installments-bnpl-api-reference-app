@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mastercard.installments</groupId>
-    <artifactId>installments-bnpl-api-reference-app</artifactId>
+    <artifactId>bnpl-api-reference-application</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>installments-bnpl-api-reference-app</name>
-    <description>Installments Bnpl Api Reference App</description>
+    <name>bnpl-api-reference-application</name>
+    <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>11</java.version>
         <oauth1-signer-version>1.5.2</oauth1-signer-version>
@@ -22,13 +22,13 @@
         <swagger-core-version>1.6.6</swagger-core-version>
         <javax-annotation-version>1.3.2</javax-annotation-version>
         <commons-lang3-version>3.11</commons-lang3-version>
+        <javax-validation-version>2.0.1.Final</javax-validation-version>
+        <client-encryption-version>1.7.0</client-encryption-version>
         <sonar.coverage.exclusions>
             **/BnplApiReferenceApplication.java,
-            **/com/mastercard/installments/bnpl/api/reference/application/configuration/ApiConfiguration.java,
-            **/com/mastercard/installments/bnpl/api/reference/application/controller/MerchantsParticipationController.java     
+            **/com/mastercard/installments/bnpl/api/reference/application/configuration/*,
+            **/com/mastercard/installments/bnpl/api/reference/application/util/*
         </sonar.coverage.exclusions>
-        <sonar.organization>mastercard</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencies>
         <dependency>
@@ -95,6 +95,17 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3-version}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax-validation-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mastercard.developer</groupId>
+            <artifactId>client-encryption</artifactId>
+            <version>${client-encryption-version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -122,7 +133,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/installments-bnpl-api.yml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/mastercard-installments-api.yml</inputSpec>
                             <generatorName>java</generatorName>
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
@@ -144,9 +155,9 @@
                 <version>0.8.6</version>
                 <configuration>
                     <excludes>
-                        <exclude>com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication</exclude>
-                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.MerchantsParticipationController</exclude>
-                        <exclude>com.mastercard.installments.bnpl.api.reference.application.configuration.ApiConfiguration</exclude>
+                        <exclude>
+                            com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication
+                        </exclude>
                     </excludes>
                 </configuration>
                 <executions>

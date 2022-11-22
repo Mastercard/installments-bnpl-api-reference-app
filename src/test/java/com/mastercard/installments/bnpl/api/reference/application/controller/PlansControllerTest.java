@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.JSON;
+import org.openapitools.client.model.InstallmentPlan;
 import org.openapitools.client.model.MerchantParticipation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class MerchantsParticipationControllerSIT {
+class PlansControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -25,17 +26,14 @@ class MerchantsParticipationControllerSIT {
     private final JSON json = new JSON();
 
     @Test
-    @DisplayName("Merchant Participation API")
-    void getMerchantsParticipations() throws Exception {
+    @DisplayName("Plans API")
+    void getPlan() throws Exception {
 
-        MvcResult mvcResult = this.mockMvc.perform(get("/demo/merchants-participations").param("card_product_code", "ETA").param("offset","0").param("limit","500"))
-                .andDo(print()).andExpect(status().isOk()).andReturn();
-
+        MvcResult mvcResult = this.mockMvc.perform(get("/plans/{plan_id}".replace("{plan_id}", "2fd24d3a-1f9e-4faf-97bf-caa1f7a3813f")))
+                .andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-
-        MerchantParticipation merchantParticipation = json.deserialize(contentAsString, MerchantParticipation.class);
-
-        Assertions.assertNotNull(merchantParticipation);
+        InstallmentPlan plan = json.deserialize(contentAsString, InstallmentPlan.class);
+        Assertions.assertNotNull(plan);
 
     }
 }
