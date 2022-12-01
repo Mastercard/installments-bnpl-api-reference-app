@@ -1,0 +1,1442 @@
+openapi: 3.0.3
+info:
+  title: Mastercard Installments API
+  description: >-
+    The Mastercard Installments Program is a unique and innovative buy now, pay later (BNPL) program that delivers greater choice at checkout, both in-store and online. It follows the Mastercard multi-party model with the introduction of an Installment Program Provider (IPP) role, and enables financial institutions and licensed lenders, FinTech, and BNPL players to offer a variety of flexible lending options to consumers across the Mastercard network through a seamless, digital experience.
+  contact:
+    name: API Support
+    email: apisupport@mastercard.com
+    url: https://developer.mastercard.com/support
+  version: 1.2.0
+externalDocs:
+  description: ISO 3166 COUNTRY CODES
+  url: 'https://www.iso.org/iso-3166-country-codes.html'
+servers:
+  - url: 'https://sandbox.api.mastercard.com/installments'
+    description: Sandbox
+  - url: 'https://api.mastercard.com/installments'
+    description: Production
+
+tags:
+  - name: Merchants Participation
+    description: >-
+      The API provides information on partner merchants with product code and IPP (Installment Program Providers) relationship.
+  - name: Plans
+    description: >-
+      Buy Now Pay Later installment plans.
+  - name: Approvals
+    description: >-
+      Installment Approval APIs. ** The approvals should be completed within 24 hours of initiation. **
+
+paths:
+  /merchants/participations:
+    get:
+      tags:
+        - Merchants Participation
+      summary: Provides list of merchants who have opted in or opted out for a card product.
+      description:
+        Allows registered IPP to fetch list of merchants who have opted in or opted out for any BNPL installments card products [SPP, SPS, ETA, ETB, ETC, ETD, ETE, ETF, ETG].
+        This API will provide merchants details specific to country of Installment Program Provider.
+
+      operationId: getMerchantsParticipations
+      parameters:
+        - $ref: '#/components/parameters/card_product_code'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+
+      responses:
+        '200':
+          $ref: '#/components/responses/MerchantParticipation'
+        '401':
+          $ref: '#/components/responses/AccountNotRegisteredError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableHeader'
+
+  /plans/{plan_id}:
+    get:
+      tags:
+        - Plans
+      summary: Retrieves Buy Now Pay Later installment plan.
+      description: This operation returns a BNPL installment plan based on selected plan id provided in the request.The API response contains an encrypted value for the Consumer object,and the issuer needs to decrypt the response using Mastercard client encryption key.
+      operationId: getPlan
+      parameters:
+        - $ref: '#/components/parameters/plan_id'
+      responses:
+        "200":
+          $ref: '#/components/responses/InstallmentPlan'
+        "400":
+          $ref: '#/components/responses/BadRequestError'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/ForbiddenError'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "405":
+          $ref: '#/components/responses/MethodNotAllowed'
+
+  /approvals:
+    post:
+      tags:
+        - Approvals
+      summary: Approve or decline an installment plan.
+      x-mastercard-api-encrypted: true
+      description: |-
+        This API will be used by the provider to approve or decline a plan. This endpoint uses [JWE payload encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/#jwe-encryption). Please refer to the [Securing Sensitive Data Using Payload Encryption](https://developer.mastercard.com/platform/documentation/security-and-authentication/securing-sensitive-data-using-payload-encryption/) sections for implementation details.
+      operationId: planApproval
+      parameters:
+        - $ref: '#/components/parameters/Sync'
+      requestBody:
+        $ref: '#/components/requestBodies/PlanApprovalParameters'
+      responses:
+        '200':
+          $ref: '#/components/responses/PSPData'
+        '202':
+          $ref: '#/components/responses/Accepted'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '406':
+          $ref: '#/components/responses/NotAcceptableHeader'
+  /approvals/{plan_id}:
+    get:
+      tags:
+        - Approvals
+      summary: Get status of checkout and callback url to PSP (Payment service provider).
+      description:
+        This API will be used by the provider to get status of checkout and callback URL to PSP (Payment service provider). This API should be used within 24 hours from the time the approval was posted.
+      operationId: getPlanApprovalStatus
+      parameters:
+        - $ref: '#/components/parameters/plan_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/CompletionPSPData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptableHeader'
+
+components:
+  parameters:
+    card_product_code:
+      in: query
+      name: card_product_code
+      description: Codes of the products such as ETA - ETG, SPP, and SPS
+      required: false
+      schema:
+        type: string
+        enum: [ETA, ETB, ETC, ETD, ETE, ETF, ETG, SPP, SPS]
+        pattern: ^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|SPP|SPS)$
+      example: SPS
+
+    offset:
+      in: query
+      name: offset
+      description: Determines the number of items needed in the start of the list, to retrieve the list starting from the offset.
+      required: false
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+      example: 100
+    limit:
+      in: query
+      name: limit
+      description: Controls the maximum number of items in the list.
+      required: false
+      schema:
+        type: integer
+        default: 500
+        minimum: 50
+        maximum: 500
+      example: 100
+    Sync:
+      in: query
+      description: Indicates whether the request is synchronous (the default value is false) or asynchronous
+      name: sync
+      schema:
+        type: boolean
+      example:
+        - true
+        - false
+    plan_id:
+      description: Unique identifier for plan
+      in: path
+      name: plan_id
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 3d56f5a7-db48-41f0-875e-30920e8465f3
+        maxLength: 36
+        minLength: 36
+        pattern: "^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$"
+  requestBodies:
+    PlanApprovalParameters:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PlanApprovalParameters'
+          examples:
+            Approved:
+              $ref: '#/components/examples/Approved'
+            Declined:
+              $ref: '#/components/examples/Declined'
+
+  responses:
+    MerchantParticipation:
+      description:
+        The response object that contains list of merchants who have opted in or opted out for given card product
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MerchantParticipation'
+
+    AccountNotRegisteredError:
+      description:
+        This response code is returned when server cannot find the account which has been used to call this API.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            AccountNotRegisteredError:
+              $ref: '#/components/examples/AccountNotRegisteredError'
+
+    ForbiddenError:
+      description:
+        This response code is returned when API or resource access is not approved for the client.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            ForbiddenError:
+              $ref: '#/components/examples/ForbiddenError'
+
+    BadRequestError:
+      description:
+        This response code is returned when a request is invalid, or data in the
+        request is not valid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            InvalidCardProductError:
+              $ref: '#/components/examples/InvalidCardProductError'
+            InvalidFieldFormat:
+              $ref: '#/components/examples/InvalidFieldFormat'
+            InvalidFieldLength:
+              $ref: '#/components/examples/InvalidFieldLength'
+            InvalidFieldValue:
+              $ref: '#/components/examples/InvalidFieldValue'
+            MissingRequiredField:
+              $ref: '#/components/examples/MissingRequiredField'
+
+    NotAcceptableHeader:
+      description: >-
+        This response code is returned when user enters anything except application/json in Accept header.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            NotAcceptableHeader:
+              $ref: '#/components/examples/NotAcceptableHeader'
+    PSPData:
+      description: Success response. Returns only if sync parameter is true.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PSPData'
+    CompletionPSPData:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CompletionPSPData'
+          examples:
+            Completed:
+              $ref: '#/components/examples/ApprovedCompleted'
+            In Progress:
+              $ref: '#/components/examples/ApprovedInProgress'
+    Accepted:
+      description: The request was successful and will be processed asynchronously.
+      headers:
+        Location:
+          schema:
+            type: string
+          description: The URL that the client should poll for a response status. Refer to GET /approvals/{plan_id}.
+    Unauthorized:
+      description: Authorization information is missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            Unauthorized:
+              $ref: '#/components/examples/Unauthorized'
+    NotFound:
+      description:
+        This response code is returned when the server cannot find the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          examples:
+            NotFound:
+              $ref: '#/components/examples/NotFound'
+    MethodNotAllowed:
+      description: >-
+        Method Not Allowed: Method used to request the resource is not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorWrapper'
+          example:
+            MethodNotAllowed:
+              $ref: '#/components/examples/MethodNotAllowed'
+    InstallmentPlan:
+      content:
+        application/json:
+          examples:
+            "1. Initiated plan":
+              $ref: '#/components/examples/InitiatedPlan'
+            "2. Approved plan":
+              $ref: '#/components/examples/ApprovedPlan'
+            "3. Rejected plan":
+              $ref: '#/components/examples/RejectedPlan'
+            "4. Initiated plan (real-time lender)":
+              $ref: '#/components/examples/InitiatedRealTimeLenderPlan'
+            "5. Approved plan (real-time lender)":
+              $ref: '#/components/examples/ApprovedRealTimeLenderPlan'
+            "6. Rejected plan (real-time lender)":
+              $ref: '#/components/examples/RejectedRealTimeLenderPlan'
+          schema:
+            $ref: '#/components/schemas/InstallmentPlan'
+      description: |-
+        Plan is found and returned based on plan ID.
+
+        1. The Initiated plan example shows a consumer selected plan during checkout. Lender can view the plan information, consumer information, merchant information and transaction information to determine installments eligibility.
+        2. The Approved plan example shows a consumer selected plan that has been approved by a lender. Lender can view the status of the plan after the approval.
+        3. The Rejected plan example shows a consumer selected plan that has been declined by a lender. Lender can view the status of the plan after the decline.
+  schemas:
+    MerchantParticipation:
+      title: MerchantParticipation
+      type: object
+      description:
+        Contains the list of merchant who have opted in or opted out for a card product
+      required:
+        - merchants
+      properties:
+        count:
+          description: The number of items in this batch (the size of the item array).
+          type: integer
+          example: 2
+        offset:
+          description: Determines the number of items needed in the start of the list, to retrieve the list starting from the offset
+          type: integer
+          example: 1
+        limit:
+          description: Controls the maximum number of items in the list.
+          type: integer
+          example: 2
+        total:
+          description: The total number of items in the collection.
+          type: integer
+          example: 5
+        merchants:
+          $ref: '#/components/schemas/Merchants'
+    Wallets:
+      title: Wallets
+      type: array
+      minItems: 1
+      maxItems: 500
+      description:
+        API will return the list of wallet name, wallet acceptance, and wallet merchant id.
+      items:
+        $ref: '#/components/schemas/Wallet'
+    Wallet:
+      type: object
+      description: Object representing registering a Merchant
+      properties:
+        walletName:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Wallet provider that have a relationship with the given merchant
+          example: Apple Pay
+        walletAcceptance:
+          type: string
+          maxLength: 1
+          minLength: 1
+          pattern: ^(?:Y|N)$
+          description: Wallet acceptance for the given wallet provider
+          example: Y
+        walletMerchantId:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Merchant identifier(s) as defined by the wallet provider
+          example: 235346356234
+      example:
+        walletName: Apple Pay
+        walletAcceptance: Y
+        walletMerchantId: 235346356234 | 125346356236 | 125446356237
+    amount:
+      type: number
+      format: double
+      description: Amount to be paid in an installment.
+      example: 100.0
+      exclusiveMaximum: false
+      exclusiveMinimum: false
+      maximum: 9999999999999.99
+      minimum: 0.0
+    CardProducts:
+      title: CardProducts
+      type: array
+      minItems: 1
+      maxItems: 500
+      description:
+        List of card product objects
+      items:
+        $ref: '#/components/schemas/CardProduct'
+    CardProduct:
+      type: object
+      description: Object representing card product
+      required:
+        - productCode
+        - optIn
+      properties:
+        productCode:
+          type: string
+          minLength: 1
+          maxLength: 3
+          pattern: ^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|SPP|SPS)$
+          description: Codes of the products such as ETA - ETG, SPP, and SPS
+          example: SPS
+        optIn:
+          type: string
+          maxLength: 1
+          minLength: 1
+          pattern: ^(?:Y|N)$
+          description: Merchant opt-in or opt-out preference
+          example: Y
+      example:
+        productCode: SPS
+        optIn: Y
+    Address:
+      title: Address
+      type: object
+      description:
+        Object representing a merchant address
+      required:
+        - addressLine1
+        - city
+        - state
+        - postalCode
+      properties:
+        addressLine1:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Legally registered address of the merchant
+          example: 600 WEST
+        addressLine2:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Second address line
+          example: SECTOR 5
+        addressLine3:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Third address line
+          example: SUITE 775
+        city:
+          type: string
+          minLength: 1
+          maxLength: 30
+          description: Legally registered address city.
+          example: St Peters
+        state:
+          type: string
+          minLength: 2
+          maxLength: 3
+          description: Legally registered address state or province. Refer to [ISO 3166-2] (https://www.iso.org/obp/ui/#search) for code values.
+          example: QLD
+        postalCode:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Legally registered address postal code.
+          example: 85001
+
+      example:
+        addressLine1: 600 WEST
+        addressLine2: SECTOR 5
+        addressLine3: SUITE 775
+        city: Chicago
+        state: MO
+        postalCode: 85001
+
+    Merchants:
+      title: Merchants
+      type: array
+      minItems: 1
+      maxItems: 500
+      description:
+        List of merchant objects
+      items:
+        $ref: '#/components/schemas/Merchant'
+
+    Merchant:
+      type: object
+      description: Merchant details
+      required:
+        - customerId
+        - companyName
+        - countryCode
+        - products
+        - lastUpdateDatetime
+      properties:
+        customerId:
+          type: integer
+          format: int64
+          minLength: 1
+          maxLength: 10
+          description: Primary key to identify unique company or merchant, assigned by Mastercard.
+          example: 9870152892
+        duns:
+          type: string
+          minLength: 1
+          maxLength: 9
+          description: A unique identifier assigned by Dun and Bradstreet used to identify a business.
+          example: 879847426
+        acceptorIds:
+          type: array
+          minItems: 1
+          description: A value assigned by Mastercard for transaction data integrity purposes
+          items:
+            type: string
+          example: ["123456","789101"]
+        companyName:
+          type: string
+          minLength: 1
+          maxLength: 300
+          description: Legally registered name of the merchant.
+          pattern: '^.{1,300}'
+          example: Merchant ABC
+        dbaName:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: Trade name used by merchant to conduct business, and is known to the consumer.
+          example: Merchant ABC
+        customerReferenceUrlAddress:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]'
+          description: The URL of the merchant supplied to the acquirer.
+          example: https://www.MerchantABC.com
+        countryCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '^[A-Za-z]{3}$'
+          description: Legally registered address country. Refer to [ISO 3166] (https://www.iso.org/obp/ui/#search) for alpha 3 code values.
+          example: USA
+        lastUpdateDatetime:
+          type: string
+          format: date-time
+          description: Time when this record is last updated,this field will be as per ISO8601 and RFC 3339.
+          example: '2021-11-02T12:31:26'
+        wallets:
+          $ref: '#/components/schemas/Wallets'
+        products:
+          $ref: '#/components/schemas/CardProducts'
+        address:
+          $ref: '#/components/schemas/Address'
+
+
+      example:
+        customerId: 9870152892
+        duns: 9870152892
+        acceptorIds: ["54331", "123456"]
+        companyName: Merchant ABC
+        dbaName: Merchant ABC
+        customerReferenceUrlAddress: https://www.MerchantABC.com
+        addressLine1: 600 WEST
+        addressLine2: SECTOR 5
+        addressLine3: SUITE 775
+        city: Chicago
+        state: MO
+        countryCode: USA
+        postalCode: 85001
+        productCode: SPS
+        walletName: Apple Pay
+        walletAcceptance: Y
+        walletMerchantId: 114573524
+        optIn: Y
+        lastUpdateDatetime: 2020-07-16T19:20+01:00
+
+    PlanApprovalParameters:
+      type: object
+      required:
+        - planId
+        - status
+      properties:
+        planId:
+          description: A unique identifier assigned to an installment plan.
+          type: string
+          format: uuid
+          example: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        status:
+          type: string
+          description: Plan approval status. It will be either APPROVED or DECLINED.
+          enum:
+            - APPROVED
+            - DECLINED
+          example: APPROVED
+        rejectReasonCode:
+          type: string
+          description: Describes the reason for plan rejection. Mandatory for when status is DECLINED.
+          enum:
+            - CONSUMER_AUTH_FAIL
+            - CONSUMER_APPLICATION_FAIL
+            - CONSUMER_CANCELLATION
+            - LENDER_DRIVEN_REJECTION
+            - LENDER_SYSTEM_ERROR
+            - OTHER_REASON
+          example: 'CONSUMER_APPLICATION_FAIL'
+        rejectReasonDetail:
+          type: string
+          description: Indicates detailed information about the reason of rejection.
+          minLength: 0
+          maxLength: 5000
+          example: "No credit or credit score too low"
+        approvedAmount:
+          description: The total approved amount owed by the consumer on an installment purchase, inclusive of fees and interest, for the installment plan. This field should be required in the event that the status is APPROVED.
+          type: number
+          format: double
+          example: 300.00
+          minimum: 0
+          maximum: 999999999999999
+        approvedCurrency:
+          description: Alpha numeric currency code as per ISO 4217. This field should be required in the event that the status is APPROVED.
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: 'USD'
+        paymentAuthorization:
+          description: "This block should be required in the event that the status is APPROVED."
+          type: object
+          required:
+            - primaryAccountNumber
+            - panExpirationMonth
+            - panExpirationYear
+            - cardSecurityCode
+            - billingAddress
+          properties:
+            primaryAccountNumber:
+              type: string
+              minLength: 9
+              maxLength: 19
+              description: |
+                Primary Account Number. A variable length, ISO/IEC 7812-compliant account number that is generated within account ranges associated with a BIN, by a Card Issuer.
+              example: "5555111122223333"
+            panExpirationMonth:
+              type: string
+              minLength: 2
+              maxLength: 2
+              description: Expiration month of the Card, expressed as a two-digit calendar month.
+              example: "08"
+            panExpirationYear:
+              type: string
+              minLength: 4
+              maxLength: 4
+              description: Expiration year of the Card, expressed as a four-digit calendar year.
+              example: "2022"
+            cardSecurityCode:
+              type: string
+              minLength: 3
+              maxLength: 4
+              description: Card security code
+              example: "123"
+            cardholderFullName:
+              type: string
+              maxLength: 60
+              description: Cardholder’s Name. This field is optional if cardholderFirstName and cardholderLastName are used.
+              example: "John Doe"
+            cardholderFirstName:
+              type: string
+              maxLength: 30
+              description: Cardholder’s First Name. This field is optional if cardholderFullName is used.
+              example: "John"
+            cardholderLastName:
+              type: string
+              maxLength: 30
+              description: Cardholder’s Last Name. This field is optional if cardholderFullName is used.
+              example: "Doe"
+            billingAddress:
+              type: object
+              required:
+                - line1
+                - city
+                - state
+                - countryCode
+                - zip
+              description: This block should be required in the event that the status is APPROVED.
+              properties:
+                line1:
+                  type: string
+                  maxLength: 60
+                  description: Address line 1
+                  example: "5 Street Drive"
+                line2:
+                  type: string
+                  maxLength: 75
+                  description: Address line 2
+                  example: "Apartment 123"
+                line3:
+                  type: string
+                  maxLength: 75
+                  description: Address line 3
+                  example: "Southampton"
+                city:
+                  type: string
+                  maxLength: 50
+                  description: City of residence
+                  example: "O'Fallon"
+                state:
+                  type: string
+                  maxLength: 30
+                  description: State of Residence
+                  example: "MO"
+                countryCode:
+                  description: Address country code in ISO 3166 alpha 2 format
+                  type: string
+                  example: "US"
+                zip:
+                  description: Address zip/postal code
+                  type: string
+                  maxLength: 16
+                  example: "123456"
+    PSPData:
+      type: object
+      properties:
+        callbackUrl:
+          description: PSP (Payment service provider) callback URL with checkout response. This URL will expire after 24 hours from the time the approval was posted.
+          type: string
+          example: https://src.mastercard.com#%7B%22action%22%3A%22COMPLETED%22%2C%22checkoutResponse%22%3AEncryptedData%7D
+    CompletionPSPData:
+      allOf:     # Combines the PSPData and status
+        - $ref: '#/components/schemas/PSPData'
+        - type: object
+          required:
+            - status
+          properties:
+            status:
+              description: Indicates the status of processing. It will be either IN_PROGRESS or COMPLETED.
+              type: string
+              example: IN_PROGRESS
+
+    ErrorWrapper:
+      title: ErrorWrapper
+      type: object
+      description: The error response object which gets returned in case of any error.
+      required:
+        - Errors
+      properties:
+        Errors:
+          $ref: '#/components/schemas/Errors'
+    Errors:
+      title: Errors
+      type: object
+      description: Error object which returns list of Error objects.
+      required:
+        - Error
+      properties:
+        Error:
+          $ref: '#/components/schemas/ErrorList'
+    ErrorList:
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/Error'
+    Error:
+      title: Error
+      type: object
+      description: Error object which contains details about error.
+      required:
+        - Source
+        - ReasonCode
+        - Description
+        - Recoverable
+      properties:
+        Source:
+          type: string
+          description:
+            The application name that generated this error.
+          minLength: 1
+          maxLength: 100
+          example: Mastercard Installments API's
+        ReasonCode:
+          type: string
+          description:
+            A unique constant identifying the error case encountered during
+            request processing.
+          minLength: 1
+          maxLength: 100
+          example: invalid.request.parameter
+        Description:
+          type: string
+          description: Short description of the ReasonCode field.
+          minLength: 10
+          maxLength: 1000
+          example:
+            One of the request parameters is invalid, try again with correct
+            request.
+        Recoverable:
+          type: boolean
+          description:
+            Indicates whether this error will always be returned for this
+            request, or retrying could change the outcome.
+          example: false
+        Details:
+          type: string
+          description:
+            (Optional) Where appropriate, indicates detailed information about
+            data received and calculated during request processing, to help the
+            user with diagnosing errors.
+          minLength: 0
+          maxLength: 5000
+          example: paymentCardId size must be between 36 and 36
+    Consumer:
+      type: object
+      properties:
+        email:
+          type: string
+          description: "Consumer's email address. Hashed for pre-approved consumer,\
+                    \ raw for consumer without pre-approval."
+          example: jane.doe@example.com
+          maxLength: 254
+          minLength: 5
+        isdCode:
+          type: string
+          description: ISD code of the consumer's mobile number.
+          example: "1"
+          maxLength: 5
+          minLength: 1
+        mobile:
+          type: string
+          description: "Consumer's mobile number. Hashed for pre-approved consumer,\
+                    \ raw for consumer without pre-approval."
+          example: "5550009999"
+          maxLength: 64
+          minLength: 4
+        providerConsumerId:
+          type: string
+          format: uuid
+          description: Unique user ID provided by the Installment Program Provider.
+            This is specific to provider. (External user/consumer id). Applicable
+            only for pre-approved consumers.
+          example: 3d56f5a7-db48-41f0-875e-30920e8465f3
+          maxLength: 36
+          minLength: 36
+    InstallmentPlan:
+      type: object
+      properties:
+        consumer:
+          $ref: '#/components/schemas/Consumer'
+        merchant:
+          $ref: '#/components/schemas/MerchantPlan'
+        offerId:
+          $ref: '#/components/schemas/OfferIdField'
+        planId:
+          $ref: '#/components/schemas/PlanIdField'
+        planInstallmentInformation:
+          $ref: '#/components/schemas/PlanInstallmentInformation'
+        providerId:
+          $ref: '#/components/schemas/ProviderIdField'
+        rejectReasonCode:
+          type: string
+          description: "Describes the reason for plan rejection. Mandatory for when\
+                  \ status is DECLINED. Following are the reject reason codes:[ CONSUMER_AUTH_FAIL, CONSUMER_APPLICATION_FAIL,\
+                  \ CONSUMER_CANCELLATION, LENDER_DRIVEN_REJECTION, LENDER_SYSTEM_ERROR,\
+                  \ OTHER_REASON ]"
+          example: CONSUMER_CANCELLATION
+          maxLength: 30
+          minLength: 12
+        rejectReasonDetail:
+          type: string
+          description: Indicates detailed information about reject reason.
+          example: Credit score is too low
+          maxLength: 5000
+          minLength: 0
+        scheduledRepayments:
+          $ref: '#/components/schemas/ScheduledRepayments'
+        status:
+          $ref: '#/components/schemas/StatusField'
+        transaction:
+          $ref: '#/components/schemas/Transaction'
+      required:
+        - merchant
+        - planId
+        - providerId
+        - status
+        - transaction
+    MerchantPlan:
+      type: object
+      properties:
+        acceptor:
+          type: string
+          description: Merchant acceptor identifier.
+          example: "100234"
+          maxLength: 100
+          minLength: 1
+        country:
+          type: string
+          description: Country code in ISO 3166 alpha 3 format.
+          example: USA
+          maxLength: 3
+          minLength: 3
+        mcc:
+          type: string
+          description: Merchant Category Code.
+          example: "1711"
+          maxLength: 4
+          minLength: 4
+        name:
+          type: string
+          description: Merchant name.
+          example: Decor shop
+          maxLength: 100
+          minLength: 1
+      required:
+        - country
+        - mcc
+    OfferIdField:
+      type: string
+      description: Installment Program Provider's offer identifier.
+      example: "24092019"
+      maxLength: 8
+      minLength: 8
+    PlanIdField:
+      type: string
+      format: uuid
+      description: A unique identifier assigned to an installment plan
+      example: 3d56f5a7-db48-41f0-875e-30920e8465f3
+      maxLength: 36
+      minLength: 36
+    PlanInstallmentInformation:
+      type: object
+      properties:
+        apr:
+          type: number
+          format: double
+          description: Annual Percentage Rate (APR).
+          example: 25.03
+          exclusiveMaximum: false
+          exclusiveMinimum: false
+          maximum: 200.0
+          minimum: 0.0
+        currency:
+          type: string
+          description: Currency code according to ISO 4217.
+          example: USD
+          maxLength: 3
+          minLength: 3
+        frequency:
+          type: string
+          description: Frequency of installment (single installment time duration).
+          example: 15DAYS
+          maxLength: 20
+          minLength: 3
+        installmentAmount:
+          type: number
+          format: double
+          description: Amount to be paid in an installment.
+          example: 100.0
+          exclusiveMaximum: false
+          exclusiveMinimum: false
+          maximum: 9999999999999.99
+          minimum: 0.0
+        installmentFee:
+          type: number
+          format: double
+          description: Installment fee amount.
+          example: 2.05
+          exclusiveMaximum: false
+          exclusiveMinimum: false
+          maximum: 100.0
+          minimum: 0.0
+        tenure:
+          type: integer
+          format: int32
+          description: Total number of installments for an offer. Offer tenure.
+          example: 2
+          maximum: 99
+          minimum: 2
+        totalAmount:
+          type: number
+          format: double
+          description: "The total amount owed by the cardholder on an installment\
+                  \ purchase inclusive of fees, tax and interest for the installment plan."
+          example: 200.0
+          exclusiveMaximum: false
+          exclusiveMinimum: false
+          maximum: 9999999999999.99
+          minimum: 0.0
+    ProviderIdField:
+      type: string
+      format: uuid
+      description: Provider Id is internal id generated by Configuration API.
+      example: 3d56f5a7-db48-41f0-875e-30920e8465f3
+      maxLength: 36
+      minLength: 36
+    ScheduledRepayment:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        dueDate:
+          type: string
+          description: Due date for an installment.
+          example: 2022-5-21
+          maxLength: 10
+          minLength: 8
+        installmentNumber:
+          type: integer
+          format: int32
+          description: Number of an installment.
+          example: 1
+          maximum: 99
+          minimum: 1
+    ScheduledRepayments:
+      type: array
+      items:
+        $ref: '#/components/schemas/ScheduledRepayment'
+      minItems: 2
+    StatusField:
+      type: string
+      description: "Current status of a plan. One of: CREATED, APPROVED, DECLINED,\
+              \ TIMED_OUT"
+      example: CREATED
+      maxLength: 12
+      minLength: 7
+    Transaction:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/amount'
+        currency:
+          type: string
+          description: Currency code according to ISO 4217.
+          example: USD
+          maxLength: 3
+          minLength: 3
+      required:
+        - amount
+        - currency
+
+  examples:
+
+
+    AccountNotRegisteredError:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: account.not.registered
+              Description:
+                We cannot find the account which you are using to access this
+                service. Kindly register your account or contact your Mastercard
+                associate if you have already registered with us earlier.
+              Recoverable: false
+              Details: ''
+
+    ForbiddenError:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: forbidden
+              Description:
+                Your account is not approved to access the API or resource, kindly contact your
+                Mastercard associate to get approval.
+              Recoverable: false
+              Details: ''
+
+    NotAcceptableHeader:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: not.acceptable.header
+              Description: >-
+                Accept header value is not application/json.
+              Recoverable: false
+              Details: ''
+
+    InvalidCardProductError:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: invalid.request.parameter
+              Description:
+                Product SPP is not available for IND country
+              Recoverable: false
+              Details: ''
+
+    Approved:
+      description: Request approved
+      value:
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        status: "APPROVED"
+        approvedAmount: 300
+        approvedCurrency: 'USD'
+        paymentAuthorization:
+          primaryAccountNumber: "5555111122223333"
+          panExpirationMonth: "08"
+          panExpirationYear: "2022"
+          cardSecurityCode: "123"
+          cardholderFullName: "John Doe"
+          cardholderFirstName: "John"
+          cardholderLastName: "Doe"
+          billingAddress:
+            line1: "5 Street Drive"
+            line2: "Apartment 123"
+            line3: "Southampton"
+            city: "O'Fallon"
+            state: "MO"
+            countryCode: "US"
+            zip: "123456"
+    Declined:
+      description: Request declined
+      value:
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        status: "DECLINED"
+        rejectReasonCode: "CONSUMER_NOT_ELIGIBLE"
+        rejectReasonDetail: "Credit score is too low"
+
+    ApprovedCompleted:
+      description: Approval processing is completed
+      value:
+        status: "COMPLETED"
+        callbackUrl: "https://src.mastercard.com?action=COMPLETED&checkoutResponse=EncryptedData"
+    ApprovedInProgress:
+      description: Approval processing is in progress
+      value:
+        status: "IN_PROGRESS"
+    Unauthorized:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: unauthenticated
+              Description: Authentication is failed. Client must authenticate to get the requested response.
+              Recoverable: false
+              Details: ''
+    NotFound:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: not.found
+              Description:
+                Resource is not found.
+              Recoverable: false
+              Details: ''
+    MethodNotAllowed:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: method.not.allowed
+              Description:
+                Method is not allowed
+              Recoverable: false
+    InvalidFieldFormat:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: invalid.request.body.parameter
+              Description: Field format or type is invalid
+              Recoverable: false
+              Details: ''
+    InvalidFieldLength:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: invalid.request.body.parameter
+              Description: Field length is out of bound
+              Recoverable: false
+              Details: ''
+    InvalidFieldValue:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: invalid.request.body.parameter
+              Description:
+                Value doesn't exist / doesn't meet specified range
+              Recoverable: false
+              Details: ''
+    MissingRequiredField:
+      value:
+        Errors:
+          Error:
+            - Source: Mastercard Installments API's
+              ReasonCode: invalid.request.body.parameter
+              Description:
+                One or more of the required fields are missing
+              Recoverable: false
+              Details: ''
+
+    ApprovedPlan:
+      value:
+        consumer:
+          email: "doe.jane@example.com"
+          isdCode: "1"
+          mobile: "5551231234"
+          providerConsumerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        merchant:
+          acceptor: "100234"
+          country: "USA"
+          mcc: "1711"
+          name: "Decor shop"
+        offerId: "24092019"
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        planInstallmentInformation:
+          apr: 1.92
+          currency: "USD"
+          frequency: "15DAYS"
+          installmentAmount: 166.79
+          installmentFee: 0.0
+          tenure: 3
+          totalAmount: 500.37
+        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        scheduledRepayments:
+          - amount: 166.79
+            dueDate: "2022-05-30"
+            installmentNumber: 1
+          - amount: 166.79
+            dueDate: "2022-06-13"
+            installmentNumber: 2
+          - amount: 166.79
+            dueDate: "2022-06-27"
+            installmentNumber: 3
+        status: "APPROVED"
+        transaction:
+          amount: 400.11
+          currency: "USD"
+
+    ApprovedRealTimeLenderPlan:
+      value:
+        consumer:
+          email: "doe.jane@example.com"
+          isdCode: "1"
+          mobile: "5551231234"
+        merchant:
+          acceptor: "100234"
+          country: "USA"
+          mcc: "1711"
+          name: "Decor shop"
+        offerId: "24092019"
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        planInstallmentInformation:
+          apr: 1.92
+          currency: "USD"
+          frequency: "15DAYS"
+          installmentAmount: 166.79
+          installmentFee: 0.0
+          tenure: 3
+          totalAmount: 500.37
+        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        scheduledRepayments:
+          - amount: 166.79
+            dueDate: "2022-05-30"
+            installmentNumber: 1
+          - amount: 166.79
+            dueDate: "2022-06-13"
+            installmentNumber: 2
+          - amount: 166.79
+            dueDate: "2022-06-27"
+            installmentNumber: 3
+        status: "APPROVED"
+        transaction:
+          amount: 400.11
+          currency: "USD"
+
+    InitiatedPlan:
+      value:
+        consumer:
+          email: "doe.jane@example.com"
+          isdCode: "1"
+          mobile: "5551231234"
+          providerConsumerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        merchant:
+          acceptor: "100234"
+          country: "USA"
+          mcc: "1711"
+          name: "Decor shop"
+        offerId: "24092019"
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        planInstallmentInformation:
+          apr: 1.92
+          currency: "USD"
+          frequency: "15DAYS"
+          installmentAmount: 166.79
+          installmentFee: 0.0
+          tenure: 3
+          totalAmount: 500.37
+        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        scheduledRepayments:
+          - amount: 166.79
+            dueDate: "2022-05-30"
+            installmentNumber: 1
+          - amount: 166.79
+            dueDate: "2022-06-13"
+            installmentNumber: 2
+          - amount: 166.79
+            dueDate: "2022-06-27"
+            installmentNumber: 3
+        status: "CREATED"
+        transaction:
+          amount: 400.11
+          currency: "USD"
+
+    InitiatedRealTimeLenderPlan:
+      value:
+        consumer:
+          email: "doe.jane@example.com"
+          isdCode: "1"
+          mobile: "5551231234"
+        merchant:
+          acceptor: "100234"
+          country: "USA"
+          mcc: "1711"
+          name: "Decor shop"
+        offerId: "24092019"
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        planInstallmentInformation:
+          apr: 1.92
+          currency: "USD"
+          frequency: "15DAYS"
+          installmentAmount: 166.79
+          installmentFee: 0.0
+          tenure: 3
+          totalAmount: 500.37
+        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        scheduledRepayments:
+          - amount: 166.79
+            dueDate: "2022-05-30"
+            installmentNumber: 1
+          - amount: 166.79
+            dueDate: "2022-06-13"
+            installmentNumber: 2
+          - amount: 166.79
+            dueDate: "2022-06-27"
+            installmentNumber: 3
+        status: "CREATED"
+        transaction:
+          amount: 400.11
+          currency: "USD"
+
+    RejectedPlan:
+      value:
+        consumer:
+          email: "doe.jane@example.com"
+          isdCode: "1"
+          mobile: "5551231234"
+          providerConsumerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        merchant:
+          acceptor: "100234"
+          country: "USA"
+          mcc: "1711"
+          name: "Decor shop"
+        offerId: "24092019"
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        planInstallmentInformation:
+          apr: 1.92
+          currency: "USD"
+          frequency: "15DAYS"
+          installmentAmount: 166.79
+          installmentFee: 0.0
+          tenure: 3
+          totalAmount: 500.37
+        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        rejectReasonCode: "LENDER_DRIVEN_REJECTION"
+        rejectReasonDetail: "Customer's credit score is insufficient."
+        scheduledRepayments:
+          - amount: 166.79
+            dueDate: "2022-05-30"
+            installmentNumber: 1
+          - amount: 166.79
+            dueDate: "2022-06-13"
+            installmentNumber: 2
+          - amount: 166.79
+            dueDate: "2022-06-27"
+            installmentNumber: 3
+        status: "DECLINED"
+        transaction:
+          amount: 400.11
+          currency: "USD"
+
+    RejectedRealTimeLenderPlan:
+      value:
+        consumer:
+          email: "doe.jane@example.com"
+          isdCode: "1"
+          mobile: "5551231234"
+        merchant:
+          acceptor: "100234"
+          country: "USA"
+          mcc: "1711"
+          name: "Decor shop"
+        offerId: "24092019"
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        planInstallmentInformation:
+          apr: 1.92
+          currency: "USD"
+          frequency: "15DAYS"
+          installmentAmount: 166.79
+          installmentFee: 0.0
+          tenure: 3
+          totalAmount: 500.37
+        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
+        rejectReasonCode: "LENDER_DRIVEN_REJECTION"
+        rejectReasonDetail: "Customer's credit score is insufficient."
+        scheduledRepayments:
+          - amount: 166.79
+            dueDate: "2022-05-30"
+            installmentNumber: 1
+          - amount: 166.79
+            dueDate: "2022-06-13"
+            installmentNumber: 2
+          - amount: 166.79
+            dueDate: "2022-06-27"
+            installmentNumber: 3
+        status: "DECLINED"
+        transaction:
+          amount: 400.11
+          currency: "USD"

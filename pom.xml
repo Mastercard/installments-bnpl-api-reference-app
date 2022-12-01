@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.1</version>
+        <version>2.7.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mastercard.installments</groupId>
@@ -16,19 +16,23 @@
     <properties>
         <java.version>11</java.version>
         <oauth1-signer-version>1.5.2</oauth1-signer-version>
-        <okhttp-version>4.9.1</okhttp-version>
-        <gson-version>2.9.0</gson-version>
+        <okhttp-version>4.9.3</okhttp-version>
+        <gson-version>2.10</gson-version>
         <gson-fire-version>1.8.5</gson-fire-version>
-        <swagger-core-version>1.6.6</swagger-core-version>
+        <swagger-core-version>1.6.9</swagger-core-version>
         <javax-annotation-version>1.3.2</javax-annotation-version>
-        <commons-lang3-version>3.11</commons-lang3-version>
+        <commons-lang3-version>3.12.0</commons-lang3-version>
+        <javax-validation-version>2.0.1.Final</javax-validation-version>
+        <client-encryption-version>1.7.6</client-encryption-version>
+        <openapi-generator-version>6.2.1</openapi-generator-version>
+        <findbugs-version>3.0.2</findbugs-version>
+        <jacoco-version>0.8.8</jacoco-version>
+        <javax-ws-rs-version>2.1.1</javax-ws-rs-version>
         <sonar.coverage.exclusions>
             **/BnplApiReferenceApplication.java,
-            **/com/mastercard/installments/bnpl/api/reference/application/configuration/ApiConfiguration.java,
-            **/com/mastercard/installments/bnpl/api/reference/application/controller/MerchantsParticipationController.java     
+            **/com/mastercard/installments/bnpl/api/reference/application/configuration/*,
+            **/com/mastercard/installments/bnpl/api/reference/application/util/*
         </sonar.coverage.exclusions>
-        <sonar.organization>mastercard</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencies>
         <dependency>
@@ -88,12 +92,28 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
+            <version>${findbugs-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax-validation-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>${javax-ws-rs-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mastercard.developer</groupId>
+            <artifactId>client-encryption</artifactId>
+            <version>${client-encryption-version}</version>
         </dependency>
     </dependencies>
 
@@ -114,7 +134,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>5.4.0</version>
+                <version>${openapi-generator-version}</version>
                 <executions>
                     <execution>
                         <id>BNPL REST API Client</id>
@@ -122,7 +142,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/src/main/resources/installments-bnpl-api.yml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/mastercard-installments-api.yml</inputSpec>
                             <generatorName>java</generatorName>
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
@@ -141,12 +161,12 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version>
+                <version>${jacoco-version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication</exclude>
-                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.MerchantsParticipationController</exclude>
-                        <exclude>com.mastercard.installments.bnpl.api.reference.application.configuration.ApiConfiguration</exclude>
+                        <exclude>
+                            com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication
+                        </exclude>
                     </excludes>
                 </configuration>
                 <executions>
