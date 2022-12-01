@@ -17,14 +17,23 @@ package com.mastercard.installments.bnpl.api.reference.application.configuration
 
 import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
 import com.mastercard.developer.utils.AuthenticationUtils;
+import com.mastercard.developer.encryption.EncryptionException;
+import com.mastercard.developer.encryption.JweConfig;
+import com.mastercard.developer.encryption.JweConfigBuilder;
+import com.mastercard.developer.utils.EncryptionUtils;
 import org.openapitools.client.ApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.security.cert.Certificate;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 public class ApiConfiguration {
 
@@ -43,6 +52,27 @@ public class ApiConfiguration {
     @Value("${mastercard.api.environment.base-path}")
     private String basePath;
 
+    @Value("${mastercard.api.encryption.key-file}")
+    private Resource encryptionKeyFile;
+
+    @Value("${mastercard.api.decryption.key-file}")
+    private Resource decryptionKeyFile;
+
+    @Value("${mastercard.api.decryption.keystore-alias}")
+    private String decryptionKeyAlias;
+
+    @Value("${mastercard.api.decryption.keystore-password}")
+    private String decryptionKeyPassword;
+
+    public String getConsumerKey() {
+        return consumerKey;
+    }
+
+    public String getBasePath() {
+        return basePath;
+    }
+
+
     @Bean
     public ApiClient setupApiClient() {
         var apiClient = new ApiClient();
@@ -59,7 +89,7 @@ public class ApiConfiguration {
         return apiClient;
     }
 
-    private PrivateKey getSigningKey() {
+    public PrivateKey getSigningKey() {
         try {
             return AuthenticationUtils.loadSigningKey(
                     p12File.getFile().getAbsolutePath(),
@@ -68,6 +98,25 @@ public class ApiConfiguration {
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
+    }
+    
+    public JweConfig getJweConfig() {
+        JweConfig config = null;
+    	try {
+            Certificate encryptionCertificate = EncryptionUtils.loadEncryptionCertificate(encryptionKeyFile.getFile().getAbsolutePath());
+            PrivateKey decryptionKey = EncryptionUtils.loadDecryptionKey(decryptionKeyFile.getFile().getAbsolutePath(), decryptionKeyAlias, decryptionKeyPassword);
+            config = JweConfigBuilder.aJweEncryptionConfig()
+                    .withEncryptionCertificate(encryptionCertificate)
+                    .withDecryptionKey(decryptionKey)
+                    .withEncryptionPath("$", "$")
+                    .withDecryptionPath("$.consumer.encryptedData", "$.consumer")
+                    .withEncryptedValueFieldName("cipher")
+                    .build();
+            return config;
+        } catch (GeneralSecurityException | IOException | EncryptionException e) {
+            log.error("Exception occurred while configuration ",e);
+        }
+    	return config;
     }
 
 }
