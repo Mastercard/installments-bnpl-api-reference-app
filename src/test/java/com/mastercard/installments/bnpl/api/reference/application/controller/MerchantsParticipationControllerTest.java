@@ -28,7 +28,7 @@ class MerchantsParticipationControllerTest {
     @DisplayName("Merchant Participation API")
     void getMerchantsParticipations() throws Exception {
 
-        MvcResult mvcResult = this.mockMvc.perform(get("/demo/merchants-participations").param("card_product_code", "ETA").param("country_code", "USA").param("offset","0").param("limit","500"))
+        MvcResult mvcResult = this.mockMvc.perform(get("/demo/merchants-participations").param("card_product_code", "ETA").param("offset","0").param("limit","500"))
                 .andDo(print()).andExpect(status().isOk()).andReturn();
 
         String contentAsString = mvcResult.getResponse().getContentAsString();

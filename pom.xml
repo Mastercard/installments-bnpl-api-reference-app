@@ -9,14 +9,14 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mastercard.installments</groupId>
-    <artifactId>bnpl-api-reference-application</artifactId>
+    <artifactId>installments-bnpl-api-reference-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>bnpl-api-reference-application</name>
-    <description>Demo project for Spring Boot</description>
+    <name>installments-bnpl-api-reference-app</name>
+    <description>Installments Bnpl Api Reference App</description>
     <properties>
         <java.version>11</java.version>
         <oauth1-signer-version>1.5.2</oauth1-signer-version>
-        <okhttp-version>4.10.0</okhttp-version>
+        <okhttp-version>4.9.3</okhttp-version>
         <gson-version>2.10</gson-version>
         <gson-fire-version>1.8.5</gson-fire-version>
         <swagger-core-version>1.6.9</swagger-core-version>

@@ -1,5 +1,8 @@
 # Mastercard Installments Reference App
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_installments-bnpl-api-reference-app&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Mastercard_installments-bnpl-api-reference-app)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_installments-bnpl-api-reference-app&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Mastercard_installments-bnpl-api-reference-app)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_installments-bnpl-api-reference-app&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Mastercard_installments-bnpl-api-reference-app)
+[![](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/Mastercard/installments-bnpl-api-reference-app/blob/main/LICENSE)
 ## Table of Contents
 - [Overview](#overview)
 - [Requirements](#requirements)
