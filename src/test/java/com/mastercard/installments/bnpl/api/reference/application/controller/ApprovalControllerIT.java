@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ApprovalControllerTest {
+public class ApprovalControllerIT {
     @Autowired
     private MockMvc mockMvc;
 
