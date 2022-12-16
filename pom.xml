@@ -170,7 +170,7 @@
                         <exclude>com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication</exclude>
                         <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.MerchantsParticipationController</exclude>
                         <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.PlansController</exclude>
-                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.ApprovalController</exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.ApprovalsController</exclude>
                         <exclude>com.mastercard.installments.bnpl.api.reference.application.configuration.ApiConfiguration</exclude>
                     </excludes>
                 </configuration>

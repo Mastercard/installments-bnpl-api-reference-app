@@ -16,7 +16,7 @@
 package com.mastercard.installments.bnpl.api.reference.application.controller;
 
 import com.mastercard.installments.bnpl.api.reference.application.exception.ServiceException;
-import com.mastercard.installments.bnpl.api.reference.application.service.PlansService;
+import com.mastercard.installments.bnpl.api.reference.application.service.PlanService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.openapitools.client.model.InstallmentPlan;
@@ -30,12 +30,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PlansController {
 
-    private final PlansService plansService;
+    private final PlanService planService;
 
     @GetMapping("{plan_id}")
     public InstallmentPlan getPlan(
         @PathVariable("plan_id") UUID planId
     ) throws ServiceException {
-        return plansService.getPlan(planId);
+        return planService.getPlan(planId);
     }
 }
