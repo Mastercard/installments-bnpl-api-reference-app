@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Mastercard Installments API
   description: >-
-    The Mastercard Installments Program is a unique and innovative buy now, pay later (BNPL) program that delivers greater choice at checkout, both in-store and online. It follows the Mastercard multi-party model with the introduction of an Installment Program Provider (IPP) role, and enables financial institutions and licensed lenders, FinTech, and BNPL players to offer a variety of flexible lending options to consumers across the Mastercard network through a seamless, digital experience.
+    The Mastercard Installments Program is a unique and innovative Buy Now, Pay Later (BNPL) program that delivers greater choice at checkout, both in-store and online. It follows the Mastercard multi-party model with the introduction of an Installment Program Provider (IPP) role, and enables financial institutions, licensed lenders, FinTech, and BNPL players to offer a variety of flexible lending options to consumers across the Mastercard network through a seamless, digital experience.
   contact:
     name: API Support
     email: apisupport@mastercard.com
@@ -35,7 +35,7 @@ paths:
         - Merchants Participation
       summary: Provides list of merchants who have opted in or opted out for a card product.
       description:
-        Allows registered IPP to fetch list of merchants who have opted in or opted out for any BNPL installments card products [SPP, SPS, ETA, ETB, ETC, ETD, ETE, ETF, ETG].
+        Allows registered IPP to fetch list of merchants who have opted in or opted out for any BNPL installments card products.
         This API will provide merchants details specific to country of Installment Program Provider.
 
       operationId: getMerchantsParticipations
@@ -60,8 +60,8 @@ paths:
     get:
       tags:
         - Plans
-      summary: Retrieves Buy Now Pay Later installment plan.
-      description: This operation returns a BNPL installment plan based on selected plan id provided in the request.The API response contains an encrypted value for the Consumer object,and the issuer needs to decrypt the response using Mastercard client encryption key.
+      summary: Retrieves Buy Now, Pay Later installment plan.
+      description: This operation returns a BNPL installment plan based on selected plan id provided in the request.The API response contains an encrypted values of consumer's email and phone, and the issuer needs to decrypt the response using Mastercard client encryption key.
       operationId: getPlan
       parameters:
         - $ref: '#/components/parameters/plan_id'
@@ -178,10 +178,8 @@ components:
       schema:
         type: string
         format: uuid
-        example: 3d56f5a7-db48-41f0-875e-30920e8465f3
-        maxLength: 36
-        minLength: 36
-        pattern: "^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$"
+      example: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+
   requestBodies:
     PlanApprovalParameters:
       required: true
@@ -190,8 +188,10 @@ components:
           schema:
             $ref: '#/components/schemas/PlanApprovalParameters'
           examples:
-            Approved:
-              $ref: '#/components/examples/Approved'
+            ApprovedOfferSelected:
+              $ref: '#/components/examples/ApprovedOfferSelected'
+            ApprovedProviderSelected:
+              $ref: '#/components/examples/ApprovedProviderSelected'
             Declined:
               $ref: '#/components/examples/Declined'
 
@@ -313,26 +313,18 @@ components:
       content:
         application/json:
           examples:
-            "1. Initiated plan":
-              $ref: '#/components/examples/InitiatedPlan'
-            "2. Approved plan":
+            "1. Initiated plan - offer selected":
+              $ref: '#/components/examples/InitiatedPlanOfferSelected'
+            "2. Initiated plan - provider selected":
+              $ref: '#/components/examples/InitiatedPlanProviderSelected'
+            "3. Approved plan":
               $ref: '#/components/examples/ApprovedPlan'
-            "3. Rejected plan":
+            "4. Rejected plan":
               $ref: '#/components/examples/RejectedPlan'
-            "4. Initiated plan (real-time lender)":
-              $ref: '#/components/examples/InitiatedRealTimeLenderPlan'
-            "5. Approved plan (real-time lender)":
-              $ref: '#/components/examples/ApprovedRealTimeLenderPlan'
-            "6. Rejected plan (real-time lender)":
-              $ref: '#/components/examples/RejectedRealTimeLenderPlan'
           schema:
             $ref: '#/components/schemas/InstallmentPlan'
-      description: |-
+      description: |
         Plan is found and returned based on plan ID.
-
-        1. The Initiated plan example shows a consumer selected plan during checkout. Lender can view the plan information, consumer information, merchant information and transaction information to determine installments eligibility.
-        2. The Approved plan example shows a consumer selected plan that has been approved by a lender. Lender can view the status of the plan after the approval.
-        3. The Rejected plan example shows a consumer selected plan that has been declined by a lender. Lender can view the status of the plan after the decline.
   schemas:
     MerchantParticipation:
       title: MerchantParticipation
@@ -396,7 +388,7 @@ components:
         walletName: Apple Pay
         walletAcceptance: Y
         walletMerchantId: 235346356234 | 125346356236 | 125446356237
-    amount:
+    Amount:
       type: number
       format: double
       description: Amount to be paid in an installment.
@@ -613,6 +605,13 @@ components:
             - APPROVED
             - DECLINED
           example: APPROVED
+        offerId:
+          description: Mastercard Installments identifier for Provider Specific Offer. This ID is generated during Offer Creation on MC Connect UI.
+          type: string
+          format: string
+          minLength: 8
+          maxLength: 8
+          example: "24092019"
         rejectReasonCode:
           type: string
           description: Describes the reason for plan rejection. Mandatory for when status is DECLINED.
@@ -895,6 +894,8 @@ components:
           $ref: '#/components/schemas/StatusField'
         transaction:
           $ref: '#/components/schemas/Transaction'
+        transactionOffers:
+          $ref: '#/components/schemas/TransactionOffers'
       required:
         - merchant
         - planId
@@ -1014,7 +1015,7 @@ components:
       type: object
       properties:
         amount:
-          $ref: '#/components/schemas/amount'
+          $ref: '#/components/schemas/Amount'
         dueDate:
           type: string
           description: Due date for an installment.
@@ -1032,7 +1033,7 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/ScheduledRepayment'
-      minItems: 2
+      maxItems: 99
     StatusField:
       type: string
       description: "Current status of a plan. One of: CREATED, APPROVED, DECLINED,\
@@ -1044,7 +1045,7 @@ components:
       type: object
       properties:
         amount:
-          $ref: '#/components/schemas/amount'
+          $ref: '#/components/schemas/Amount'
         currency:
           type: string
           description: Currency code according to ISO 4217.
@@ -1054,6 +1055,19 @@ components:
       required:
         - amount
         - currency
+    TransactionOffer:
+      type: object
+      properties:
+        offerId:
+          $ref: '#/components/schemas/OfferIdField'
+      required:
+        - offerId
+    TransactionOffers:
+      type: array
+      description: A list of available offers. Mandatory when offerId is missing
+      items:
+        $ref: '#/components/schemas/TransactionOffer'
+      maxItems: 50
 
   examples:
 
@@ -1105,11 +1119,36 @@ components:
               Recoverable: false
               Details: ''
 
-    Approved:
-      description: Request approved
+    ApprovedOfferSelected:
+      description: Approved plan request when offer was selected by a consumer at Initiation stage.
       value:
         planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
         status: "APPROVED"
+        approvedAmount: 300.00
+        approvedCurrency: 'USD'
+        paymentAuthorization:
+          primaryAccountNumber: "5555111122223333"
+          panExpirationMonth: "08"
+          panExpirationYear: "2022"
+          cardSecurityCode: "123"
+          cardholderFullName: "John Doe"
+          cardholderFirstName: "John"
+          cardholderLastName: "Doe"
+          billingAddress:
+            line1: "5 Street Drive"
+            line2: "Apartment 123"
+            line3: "Southampton"
+            city: "O'Fallon"
+            state: "MO"
+            countryCode: "US"
+            zip: "123456"
+
+    ApprovedProviderSelected:
+      description: Approved plan request when only a provider was selected by a consumer at Initiation stage.
+      value:
+        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
+        status: "APPROVED"
+        offerId: "24092019"
         approvedAmount: 300
         approvedCurrency: 'USD'
         paymentAuthorization:
@@ -1128,6 +1167,7 @@ components:
             state: "MO"
             countryCode: "US"
             zip: "123456"
+
     Declined:
       description: Request declined
       value:
@@ -1213,44 +1253,7 @@ components:
               Details: ''
 
     ApprovedPlan:
-      value:
-        consumer:
-          email: "doe.jane@example.com"
-          isdCode: "1"
-          mobile: "5551231234"
-          providerConsumerId: "218b9962-1355-44e4-8a16-f911363fd849"
-        merchant:
-          acceptor: "100234"
-          country: "USA"
-          mcc: "1711"
-          name: "Decor shop"
-        offerId: "24092019"
-        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
-        planInstallmentInformation:
-          apr: 1.92
-          currency: "USD"
-          frequency: "15DAYS"
-          installmentAmount: 166.79
-          installmentFee: 0.0
-          tenure: 3
-          totalAmount: 500.37
-        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
-        scheduledRepayments:
-          - amount: 166.79
-            dueDate: "2022-05-30"
-            installmentNumber: 1
-          - amount: 166.79
-            dueDate: "2022-06-13"
-            installmentNumber: 2
-          - amount: 166.79
-            dueDate: "2022-06-27"
-            installmentNumber: 3
-        status: "APPROVED"
-        transaction:
-          amount: 400.11
-          currency: "USD"
-
-    ApprovedRealTimeLenderPlan:
+      description: Example shows a consumer selected plan that has been approved by a lender. Lender can view the status of the plan after the approval.
       value:
         consumer:
           email: "doe.jane@example.com"
@@ -1286,46 +1289,30 @@ components:
         transaction:
           amount: 400.11
           currency: "USD"
-
-    InitiatedPlan:
+    InitiatedPlanProviderSelected:
+      description: Example shows a consumer selected plan during checkout when OfferId is not available. Transaction Offers and ProviderId are specified instead. Lender can view the plan information consumer information, merchant information and transaction information to determine installments eligibility.
       value:
         consumer:
           email: "doe.jane@example.com"
           isdCode: "1"
           mobile: "5551231234"
-          providerConsumerId: "218b9962-1355-44e4-8a16-f911363fd849"
         merchant:
           acceptor: "100234"
           country: "USA"
           mcc: "1711"
           name: "Decor shop"
-        offerId: "24092019"
         planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
-        planInstallmentInformation:
-          apr: 1.92
-          currency: "USD"
-          frequency: "15DAYS"
-          installmentAmount: 166.79
-          installmentFee: 0.0
-          tenure: 3
-          totalAmount: 500.37
         providerId: "218b9962-1355-44e4-8a16-f911363fd849"
-        scheduledRepayments:
-          - amount: 166.79
-            dueDate: "2022-05-30"
-            installmentNumber: 1
-          - amount: 166.79
-            dueDate: "2022-06-13"
-            installmentNumber: 2
-          - amount: 166.79
-            dueDate: "2022-06-27"
-            installmentNumber: 3
         status: "CREATED"
         transaction:
           amount: 400.11
           currency: "USD"
+        transactionOffers:
+          - offerId: "12345678"
+          - offerId: "87654321"
 
-    InitiatedRealTimeLenderPlan:
+    InitiatedPlanOfferSelected:
+      description: Example shows a consumer selected plan during checkout when OfferId is available. Lender can view the plan information consumer information, merchant information and transaction information to determine installments eligibility.
       value:
         consumer:
           email: "doe.jane@example.com"
@@ -1361,48 +1348,8 @@ components:
         transaction:
           amount: 400.11
           currency: "USD"
-
     RejectedPlan:
-      value:
-        consumer:
-          email: "doe.jane@example.com"
-          isdCode: "1"
-          mobile: "5551231234"
-          providerConsumerId: "218b9962-1355-44e4-8a16-f911363fd849"
-        merchant:
-          acceptor: "100234"
-          country: "USA"
-          mcc: "1711"
-          name: "Decor shop"
-        offerId: "24092019"
-        planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
-        planInstallmentInformation:
-          apr: 1.92
-          currency: "USD"
-          frequency: "15DAYS"
-          installmentAmount: 166.79
-          installmentFee: 0.0
-          tenure: 3
-          totalAmount: 500.37
-        providerId: "218b9962-1355-44e4-8a16-f911363fd849"
-        rejectReasonCode: "LENDER_DRIVEN_REJECTION"
-        rejectReasonDetail: "Customer's credit score is insufficient."
-        scheduledRepayments:
-          - amount: 166.79
-            dueDate: "2022-05-30"
-            installmentNumber: 1
-          - amount: 166.79
-            dueDate: "2022-06-13"
-            installmentNumber: 2
-          - amount: 166.79
-            dueDate: "2022-06-27"
-            installmentNumber: 3
-        status: "DECLINED"
-        transaction:
-          amount: 400.11
-          currency: "USD"
-
-    RejectedRealTimeLenderPlan:
+      description: Example shows a consumer selected plan that has been declined by a lender. Lender can view the status of the plan after the decline.
       value:
         consumer:
           email: "doe.jane@example.com"
