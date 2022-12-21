@@ -31,8 +31,11 @@
         <sonar.coverage.exclusions>
             **/BnplApiReferenceApplication.java,
             **/com/mastercard/installments/bnpl/api/reference/application/configuration/*,
-            **/com/mastercard/installments/bnpl/api/reference/application/util/*
+            **/com/mastercard/installments/bnpl/api/reference/application/util/*,
+            **/com/mastercard/installments/bnpl/api/reference/application/controller/*
         </sonar.coverage.exclusions>
+        <sonar.organization>mastercard</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencies>
         <dependency>
@@ -164,9 +167,11 @@
                 <version>${jacoco-version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>
-                            com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication
-                        </exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication</exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.MerchantsParticipationController</exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.PlansController</exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.controller.ApprovalsController</exclude>
+                        <exclude>com.mastercard.installments.bnpl.api.reference.application.configuration.ApiConfiguration</exclude>
                     </excludes>
                 </configuration>
                 <executions>
