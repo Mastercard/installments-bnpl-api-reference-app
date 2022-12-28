@@ -972,7 +972,7 @@ components:
         installmentAmount:
           type: number
           format: double
-          description: Amount to be paid in an installment.
+          description: Amount to be paid for the first installment.
           example: 100.0
           exclusiveMaximum: false
           exclusiveMinimum: false
