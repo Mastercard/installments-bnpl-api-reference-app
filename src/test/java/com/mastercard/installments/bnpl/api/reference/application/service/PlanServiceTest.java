@@ -10,32 +10,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.JSON;
-import org.openapitools.client.api.MerchantsParticipationApi;
 import org.openapitools.client.api.PlansApi;
-import org.openapitools.client.model.Error;
 import org.openapitools.client.model.*;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
-class PlansServiceTest {
+class PlanServiceTest {
 
-    private PlansService plansService;
+    private PlanService planService;
 
     @Mock
     private PlansApi plansApi;
@@ -47,9 +41,9 @@ class PlansServiceTest {
 
     @BeforeEach
     void setUp() throws ServiceException{
-        plansService = new PlansService(apiConfiguration);
+        planService = new PlanService(apiConfiguration);
         plansApi = mock(PlansApi.class);
-        ReflectionTestUtils.setField(plansService, "plansApi",
+        ReflectionTestUtils.setField(planService, "plansApi",
                                      plansApi);
     }
 
@@ -58,7 +52,7 @@ class PlansServiceTest {
     void getPlans() throws ApiException, ServiceException {
         UUID planId = UUID.fromString("b73a1377-e916-4496-80aa-5487a43a49df");
         when(plansApi.getPlan(planId)).thenReturn(plan());
-        InstallmentPlan plan = plansService.getPlan(planId);
+        InstallmentPlan plan = planService.getPlan(planId);
         assertNotNull(plan);
     }
 
@@ -69,7 +63,7 @@ class PlansServiceTest {
         ApiException apiException = new ApiException("ApiException", null, 500, null, "{\"Errors\":{\"Error\":[{\"ReasonCode\":\"not.found\",\"Source\":\"mci-installment-bnpl-plans-api\",\"Description\":\"Resource is not found.\",\"Recoverable\":false}]}}\n");
         when(plansApi.getPlan(planId)).thenThrow(apiException);
         Assertions.assertThrows(ServiceException.class,
-                                () -> plansService.getPlan(planId));
+                                () -> planService.getPlan(planId));
 
     }
 

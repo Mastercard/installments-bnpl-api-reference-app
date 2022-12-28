@@ -39,7 +39,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/demo")
-public class ApprovalController {
+public class ApprovalsController {
     @Autowired
     private ApprovalService approvalService;
 

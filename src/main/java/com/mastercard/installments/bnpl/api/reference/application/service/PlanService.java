@@ -34,13 +34,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class PlansService {
+public class PlanService {
 
     private final PlansApi plansApi;
 
 
     @Autowired
-    public PlansService(ApiConfiguration apiConfiguration) throws ServiceException{
+    public PlanService(ApiConfiguration apiConfiguration) throws ServiceException{
         log.info("Initializing Plans API");
         this.plansApi = new PlansApi(setup(apiConfiguration));
     }
