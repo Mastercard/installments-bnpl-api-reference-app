@@ -188,11 +188,11 @@ components:
           schema:
             $ref: '#/components/schemas/PlanApprovalParameters'
           examples:
-            ApprovedOfferSelected:
-              $ref: '#/components/examples/ApprovedOfferSelected'
-            ApprovedProviderSelected:
-              $ref: '#/components/examples/ApprovedProviderSelected'
-            Declined:
+            Approved Consumer Selected Offer:
+              $ref: '#/components/examples/ConsumerSelectedOffer'
+            Approved Lender Selected Offer:
+              $ref: '#/components/examples/LenderSelectedOffer'
+            Declined Offer:
               $ref: '#/components/examples/Declined'
 
   responses:
@@ -313,13 +313,13 @@ components:
       content:
         application/json:
           examples:
-            "1. Initiated plan - offer selected":
+            "Initiated Plan with Consumer Selected Offer":
               $ref: '#/components/examples/InitiatedPlanOfferSelected'
-            "2. Initiated plan - provider selected":
+            "Initiated Plan with Lender Selected Offer":
               $ref: '#/components/examples/InitiatedPlanProviderSelected'
-            "3. Approved plan":
+            "Approved Plan":
               $ref: '#/components/examples/ApprovedPlan'
-            "4. Rejected plan":
+            "Rejected Plan":
               $ref: '#/components/examples/RejectedPlan'
           schema:
             $ref: '#/components/schemas/InstallmentPlan'
@@ -1119,8 +1119,8 @@ components:
               Recoverable: false
               Details: ''
 
-    ApprovedOfferSelected:
-      description: Approved plan request when offer was selected by a consumer at Initiation stage.
+    ConsumerSelectedOffer:
+      description: This example shows a consumer selected offer that is approved by the lender.
       value:
         planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
         status: "APPROVED"
@@ -1143,8 +1143,8 @@ components:
             countryCode: "US"
             zip: "123456"
 
-    ApprovedProviderSelected:
-      description: Approved plan request when only a provider was selected by a consumer at Initiation stage.
+    LenderSelectedOffer:
+      description: This example shows an offer approved by the lender. The offer in this case is selected by the consumer on the lender experience.
       value:
         planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
         status: "APPROVED"
@@ -1169,7 +1169,7 @@ components:
             zip: "123456"
 
     Declined:
-      description: Request declined
+      description: This example shows an installments loan request being declined.
       value:
         planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
         status: "DECLINED"
@@ -1253,7 +1253,7 @@ components:
               Details: ''
 
     ApprovedPlan:
-      description: Example shows a consumer selected plan that has been approved by a lender. Lender can view the status of the plan after the approval.
+      description: This example shows a consumer selected plan that has been approved by a lender. Lender can view the status of the plan after the approval.
       value:
         consumer:
           email: "doe.jane@example.com"
@@ -1290,7 +1290,7 @@ components:
           amount: 400.11
           currency: "USD"
     InitiatedPlanProviderSelected:
-      description: Example shows a consumer selected plan during checkout when OfferId is not available. Transaction Offers and ProviderId are specified instead. Lender can view the plan information consumer information, merchant information and transaction information to determine installments eligibility.
+      description: This example shows no offer selection by consumer during checkout. Transaction Offers and ProviderId are specified instead. Lender can view the consumer information, merchant information and transaction information to determine installments eligibility.
       value:
         consumer:
           email: "doe.jane@example.com"
@@ -1312,7 +1312,7 @@ components:
           - offerId: "87654321"
 
     InitiatedPlanOfferSelected:
-      description: Example shows a consumer selected plan during checkout when OfferId is available. Lender can view the plan information consumer information, merchant information and transaction information to determine installments eligibility.
+      description: This example shows a consumer selected plan during checkout when OfferId is available. Lender can view the plan information consumer information, merchant information and transaction information to determine installments eligibility.
       value:
         consumer:
           email: "doe.jane@example.com"
@@ -1349,7 +1349,7 @@ components:
           amount: 400.11
           currency: "USD"
     RejectedPlan:
-      description: Example shows a consumer selected plan that has been declined by a lender. Lender can view the status of the plan after the decline.
+      description: This example shows a consumer selected plan that has been declined by a lender. Lender can view the status of the plan after the decline.
       value:
         consumer:
           email: "doe.jane@example.com"
