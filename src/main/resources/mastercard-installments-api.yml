@@ -167,9 +167,7 @@ components:
       name: sync
       schema:
         type: boolean
-      example:
-        - true
-        - false
+      example: true
     plan_id:
       description: Unique identifier for plan
       in: path
@@ -306,7 +304,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorWrapper'
-          example:
+          examples:
             MethodNotAllowed:
               $ref: '#/components/examples/MethodNotAllowed'
     InstallmentPlan:
@@ -1149,7 +1147,7 @@ components:
         planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
         status: "APPROVED"
         offerId: "24092019"
-        approvedAmount: 300
+        approvedAmount: 300.00
         approvedCurrency: 'USD'
         paymentAuthorization:
           primaryAccountNumber: "5555111122223333"
@@ -1173,7 +1171,7 @@ components:
       value:
         planId: "3d56f5a7-db48-41f0-875e-30920e8465f3"
         status: "DECLINED"
-        rejectReasonCode: "CONSUMER_NOT_ELIGIBLE"
+        rejectReasonCode: "LENDER_DRIVEN_REJECTION"
         rejectReasonDetail: "Credit score is too low"
 
     ApprovedCompleted:
