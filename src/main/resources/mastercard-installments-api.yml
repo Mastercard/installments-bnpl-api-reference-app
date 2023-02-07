@@ -628,20 +628,20 @@ components:
           maxLength: 5000
           example: "No credit or credit score too low"
         approvedAmount:
-          description: The total approved amount owed by the consumer on an installment purchase, inclusive of fees and interest, for the installment plan. This field should be required in the event that the status is APPROVED.
+          description: The total approved amount owed by the consumer on an installment purchase, inclusive of fees and interest, for the installment plan. This field is required in the event that the status is APPROVED.
           type: number
           format: double
           example: 300.00
           minimum: 0
           maximum: 999999999999999
         approvedCurrency:
-          description: Alpha numeric currency code as per ISO 4217. This field should be required in the event that the status is APPROVED.
+          description: Alpha numeric currency code as per ISO 4217. This field is required in the event that the status is APPROVED.
           type: string
           minLength: 3
           maxLength: 3
           example: 'USD'
         paymentAuthorization:
-          description: "This block should be required in the event that the status is APPROVED."
+          description: "This block is required in the event that the status is APPROVED."
           type: object
           required:
             - primaryAccountNumber
@@ -698,7 +698,7 @@ components:
                 - state
                 - countryCode
                 - zip
-              description: This block should be required in the event that the status is APPROVED.
+              description: Cardholder’s Billing Address.
               properties:
                 line1:
                   type: string
@@ -728,6 +728,9 @@ components:
                 countryCode:
                   description: Address country code in ISO 3166 alpha 2 format
                   type: string
+                  minLength: 2
+                  maxLength: 2
+                  pattern: '^[a-zA-Z]{2}$'
                   example: "US"
                 zip:
                   description: Address zip/postal code
@@ -963,7 +966,7 @@ components:
           minLength: 3
         frequency:
           type: string
-          description: Frequency of installment (single installment time duration).
+          description: Frequency of installment (single installment time duration). It will be one of the [WEEKLY, BIWEEKLY, MONTHLY, 15DAYS]
           example: 15DAYS
           maxLength: 20
           minLength: 3
