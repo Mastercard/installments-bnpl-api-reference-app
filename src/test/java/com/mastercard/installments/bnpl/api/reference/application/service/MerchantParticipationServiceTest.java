@@ -108,7 +108,7 @@ class MerchantParticipationServiceTest {
         Error error = new Error();
         error.setSource("customer-data-api");
         error.setReasonCode("invalid data: cardProductCode");
-        error.setDescription("must match \"^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|SPP|SPS)$\"");
+        error.setDescription("must match \"^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|ETH|ETL|ETM|ETN|SPP|SPS|SBJ|SBK)$\"");
         error.setRecoverable(false);
         errors.add(error);
         Errors errs = new Errors();

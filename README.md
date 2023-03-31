@@ -68,12 +68,17 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
                                        .build();
 ```
 ## Configuration <a name="configuration"></a>
-1. Create your account on [Mastercard Developers](https://developer.mastercard.com/) if you don't have it already.
-2. Create a new project here and add ***Mastercard Installments API*** to it and click continue.
-3. Download Sandbox Signing Key, a ```.p12``` file will be downloaded.
-4. Copy the downloaded ```.p12``` file to ```src/main/resources``` folder in your code.
-5. Open ```src/main/resources/application.yml``` and configure:
-    - ```mastercard.api.environment.base-path ``` - refers to sandbox endpoint, it's a static field, will be used as a host to make API calls.
+1. Create Your Account On [Mastercard Developers](https://developer.mastercard.com/) If You Don't Have Account Click On Create New Account.
+2. Create A New Project Here & Add ***Mastercard Installments API*** To It & Click Continue.
+3. Download Sandbox Signing Key, A ```.zip``` File Will Get Downloaded Click On Continue.
+4. Create Encryption Keys - Mastercard Installments API - Sandbox Enter Keyalias & Password Of Your Choice, Note Down This Details You Will Need Them To Configure In Further Steps
+5. Confirm Your Keystore Credentials Are Saved : Click on Confirm & Continue ```key-encryption-mc.p12``` File Will Get Downloaded
+6. Extract The ```.zip``` File Downloaded In Step 3 & Copy The ```.p12``` From Extracted Folder Into ```src/main/resource```
+7. Copy The Downloaded ```keyalias-encryption-mc.p12``` File To ```src/main/resource``` Folder
+8. Go to My Project Section Click On Your Newly Created Project Click On ```Actions``` Under ```Client Encryption``` Section Click on Download Encryption Key ```.pem``` File Will Be Downloaded.
+9. Copy The Downloaded ```.pem``` File To ```src/main/resources```.
+10. Open ```src/main/resources/application.yml``` & Configure:
+       - ```mastercard.api.environment.base-path ``` - Refers To Sandbox Endpoint, It's A Static Field, Will Be Used As A Host To Make API Calls.
     
     **Below properties will be required for authentication of API calls.**
     
@@ -84,10 +89,10 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
     
     **Below properties will be required to encrypt and decrypt the request and response payloads**
     
-    - ```mastercard.api.encryption.key-file``` - download Client Encryption Keys from ```client-encryption.pem```(this step will be used for approvals api).
-    - ```mastercard.api.decryption.key-file``` - Mastercard encryption key ```keyalias-encryption-mc.p12```(this step will be used for plans api).
-    - ```mastercard.api.decryption.keystore-alias``` - alias of your mastercard encryption key. ```keyalias```.
-    - ```mastercard.api.decryption.keystore-password``` - password of your mastercard encryption key.```keystorepassword```.
+    - ```mastercard.api.encryption.key-file``` - Client Encryption File just change the name downloaded in step 9 ```client-encryption.pem```(this step will be used for approvals api).
+    - ```mastercard.api.decryption.key-file``` - Mastercard encryption key File name downloaded in step 7 ```keyalias-encryption-mc.p12```(this step will be used for plans api).
+    - ```mastercard.api.decryption.keystore-alias``` - alias of your mastercard encryption key set up by you in step 4 . ```keyalias```.
+    - ```mastercard.api.decryption.keystore-password``` - password of your mastercard encryption key set up by you in step 4.```keystorepassword```.
 
 ## Use-Cases <a name="use-cases"></a>
 1. **Merchant Participation**   
