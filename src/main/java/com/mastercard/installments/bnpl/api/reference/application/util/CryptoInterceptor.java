@@ -1,17 +1,16 @@
 package com.mastercard.installments.bnpl.api.reference.application.util;
-
 import com.mastercard.developer.encryption.EncryptionConfig;
+
 import com.mastercard.developer.encryption.EncryptionException;
 import com.mastercard.developer.interceptors.OkHttpJweInterceptor;
 import com.mastercard.developer.utils.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okio.Buffer;
-
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+import okio.Buffer;
 
 @Slf4j
 public class CryptoInterceptor extends OkHttpJweInterceptor {
@@ -25,7 +24,8 @@ public class CryptoInterceptor extends OkHttpJweInterceptor {
         Request encryptedRequest = this.handleRequest(chain.request());
         Response encryptedResponse = chain.proceed(encryptedRequest);
         try {
-            if (encryptedRequest.url().toString().contains("plans")) {
+            if ((encryptedRequest.url().toString().contains("plans")) || (encryptedRequest.url().toString().contains("merchants/participations"))
+                    || (encryptedRequest.url().toString().contains("merchants/mids/searches")) ) {
                 return this.handleResponse(encryptedResponse);
             }
         } catch (EncryptionException e) {
@@ -40,6 +40,7 @@ public class CryptoInterceptor extends OkHttpJweInterceptor {
             if (null == requestBody || requestBody.contentLength() == 0) {
                 return request;
             }
+
 
             String requestPayload;
             try (Buffer buffer = new Buffer()) {

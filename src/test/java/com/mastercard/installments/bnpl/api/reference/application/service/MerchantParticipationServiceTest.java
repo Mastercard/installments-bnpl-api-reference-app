@@ -1,5 +1,6 @@
 package com.mastercard.installments.bnpl.api.reference.application.service;
 
+import com.mastercard.installments.bnpl.api.reference.application.configuration.ApiConfiguration;
 import com.mastercard.installments.bnpl.api.reference.application.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -9,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.JSON;
 import org.openapitools.client.api.MerchantsParticipationApi;
 import org.openapitools.client.model.Error;
+import org.openapitools.client.model.ErrorWrapper;
 import org.openapitools.client.model.*;
+import org.openapitools.client.model.MerchantsInner;
+import org.openapitools.client.model.Merchant;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -22,8 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,73 +36,134 @@ class MerchantParticipationServiceTest {
     private MerchantParticipationService merchantParticipationService;
 
     @Mock
-    private MerchantsParticipationApi merchantsParticipationApi;
+    private MerchantsParticipationApi merchantsParticipationGetApi;
+    @Mock
+    private MerchantsParticipationApi merchantsParticipationPostMidSearchesApi;
 
     @Mock
-    private ApiClient apiClient;
+    private ApiConfiguration apiConfiguration;
 
     private final JSON json = new JSON();
 
     @BeforeEach
     void setUp() {
-        merchantParticipationService = new MerchantParticipationService(apiClient);
-        merchantsParticipationApi = mock(MerchantsParticipationApi.class);
-        ReflectionTestUtils.setField(merchantParticipationService, "merchantsParticipationApi",
-                                     merchantsParticipationApi);
+        merchantParticipationService = new MerchantParticipationService(apiConfiguration);
+        merchantsParticipationGetApi = mock(MerchantsParticipationApi.class);
+        ReflectionTestUtils.setField(merchantParticipationService, "merchantsParticipationGetApi",
+                                     merchantsParticipationGetApi);
+        merchantsParticipationPostMidSearchesApi = mock(MerchantsParticipationApi.class);
+        ReflectionTestUtils.setField(merchantParticipationService, "merchantsParticipationPostMidSearchesApi", merchantsParticipationPostMidSearchesApi);
     }
 
     @Test
     @DisplayName("getMerchantsParticipation - Success")
     void getMerchantsParticipations() throws ApiException, ServiceException {
 
-        when(merchantsParticipationApi.getMerchantsParticipations(anyString(), anyInt(),
-                                                                  anyInt())).thenReturn(merchantParticipation());
+        when(merchantsParticipationGetApi.getMerchantParticipations(anyLong(), anyInt(),
+                                                                  anyInt())).thenReturn(getMerchants());
 
-        MerchantParticipation merchantsParticipation = merchantParticipationService.getMerchantsParticipation("ETA",
-                                                                                                              0, 500);
-        assertNotNull(merchantsParticipation);
+        List<MerchantsInner> merchants = merchantParticipationService.getMerchantParticipations(12345L, 0, 500);
+        assertNotNull(merchants);
     }
+
+    @Test
+    @DisplayName("POST mid searches - Success")
+    void postMidSearchesRequest() throws Exception {
+
+        MerchantMidSearchParameters merchantMidSearchParameters = new MerchantMidSearchParameters();
+        merchantMidSearchParameters.setMerchantLegalName("merchant legal name");
+        merchantMidSearchParameters.setCountryCode("GBR");
+        merchantMidSearchParameters.setAcquirerICA("242666");
+        PostMerchantMidSearchesRequest postMidSearchesRequest = new PostMerchantMidSearchesRequest();
+        postMidSearchesRequest.setActualInstance(merchantMidSearchParameters);
+
+        when(merchantsParticipationPostMidSearchesApi.postMerchantMidSearches(any(), anyInt(),
+                anyInt())).thenReturn(getPostMidSearchesResponse());
+
+        PostMerchantMidSearches200Response postMidSearchesResponse = merchantParticipationService.postMerchantMidSearches(postMidSearchesRequest, 0, 500);
+        assertNotNull(postMidSearchesResponse);
+    }
+
+    private PostMerchantMidSearches200Response getPostMidSearchesResponse() {
+        PostMerchantMidSearches200Response postMidSearchesResponse = new PostMerchantMidSearches200Response();
+        postMidSearchesResponse.setActualInstance(new MidDetailsPage());
+        return postMidSearchesResponse;
+    }
+
 
     @Test
     @DisplayName("getMerchantsParticipation throws exception")
     void getMerchantsParticipationsThrowsException() throws Exception {
 
         ApiException apiException = new ApiException("ApiException", null, 400, null, json.serialize(getErrorDetail()));
-        when(merchantsParticipationApi.getMerchantsParticipations(anyString(), anyInt(),
+        when(merchantsParticipationGetApi.getMerchantParticipations(anyLong(), anyInt(),
                                                                   anyInt())).thenThrow(apiException);
 
         Assertions.assertThrows(ServiceException.class,
-                                () -> merchantParticipationService.getMerchantsParticipation("XYZ", 0, 500));
+                                () -> merchantParticipationService.getMerchantParticipations(12345L, 0, 500));
 
     }
 
-    private MerchantParticipation merchantParticipation() {
-        List<Merchant> merchantList = new ArrayList<>();
+    private List<MerchantsInner> getMerchants() {
+        List<MerchantsInner> merchantList = new ArrayList<>();
 
-        Merchant merchant1 = new Merchant();
-        merchant1.setCustomerId(9999999990L);
-        merchant1.setCompanyName("Walmart");
-        merchant1.setCountryCode("USA");
-        merchant1.setProducts(Collections.emptyList());
-        merchant1.setWallets(Collections.emptyList());
-        merchantList.add(merchant1);
+        Merchant merchant = new Merchant();
+        merchant.setMerchantLegalName("merchant legal name");
+        merchant.setCountryCode("USA");
+        merchant.setAcquirerICA("242666");
+        merchant.setSubmitterICA("15643290801");
+        merchant.setDbaNames(List.of("ACME"));
+        merchant.setNonMerchantNegotiatedParticipation("N");
+        merchant.setStatus("PENDING");
+        merchant.setDuns("879847426");
+        merchant.setWebsiteUrl("https://www.example.com");
+        Wallet wallet = new Wallet();
+        wallet.setWalletId(1);
+        wallet.setWalletAcceptance("Y");
+        wallet.setWalletMerchantId("235346356234 | 125346356236 | 125446356237");
+        merchant.setWallets(List.of(wallet));
+        merchant.setWallets(Collections.emptyList());
+        Address address = new Address();
+        address.setAddressLine1("600 WEST");
+        address.setAddressLine2("Street ABC");
+        address.setAddressLine3("Suite 619");
+        address.setCity("Ballwin");
+        address.setState("MO");
+        address.setPostalCode("63367");
+        merchant.setAddress(address);
+        MerchantsInner merchantsInnerFirst = new MerchantsInner(merchant);
 
-        Merchant merchant2 = new Merchant();
-        merchant2.setCustomerId(9999999991L);
-        merchant2.setCompanyName("Google");
-        merchant2.setCountryCode("USA");
-        merchant2.setProducts(Collections.emptyList());
-        merchant2.setWallets(Collections.emptyList());
-        merchantList.add(merchant2);
+        merchantList.add(merchantsInnerFirst);
 
-        MerchantParticipation merchantParticipation = new MerchantParticipation();
-        merchantParticipation.setMerchants(merchantList);
-        merchantParticipation.setOffset(0);
-        merchantParticipation.setLimit(500);
-        merchantParticipation.setCount(2);
-        merchantParticipation.setTotal(2);
+        Merchant secondMerchant = new Merchant();
+        secondMerchant.setMerchantLegalName("second merchant legal name");
+        secondMerchant.setCountryCode("GBR");
+        secondMerchant.setAcquirerICA("123666");
+        secondMerchant.setSubmitterICA("90801");
+        secondMerchant.setDbaNames(List.of("ACME2"));
+        secondMerchant.setNonMerchantNegotiatedParticipation("Y");
+        secondMerchant.setStatus("PENDING");
+        secondMerchant.setDuns("7865847426");
+        secondMerchant.setWebsiteUrl("https://www.gbrexample.com");
+        Wallet secondMerchantWallet = new Wallet();
+        secondMerchantWallet.setWalletId(1);
+        secondMerchantWallet.setWalletAcceptance("Y");
+        secondMerchantWallet.setWalletMerchantId("235346356234 | 125346356236 | 125446356237");
+        secondMerchant.setWallets(List.of(wallet));
+        secondMerchant.setWallets(Collections.emptyList());
+        Address secondMerchantAddress = new Address();
+        secondMerchantAddress.setAddressLine1("900 Highland");
+        secondMerchantAddress.setAddressLine2("Street XYZ");
+        secondMerchantAddress.setAddressLine3("Suite 709");
+        secondMerchantAddress.setCity("St Peters");
+        secondMerchantAddress.setState("MA");
+        secondMerchantAddress.setPostalCode("73367");
+        secondMerchant.setAddress(secondMerchantAddress);
+        MerchantsInner merchantsInnerSecond = new MerchantsInner(secondMerchant);
 
-        return merchantParticipation;
+        merchantList.add(merchantsInnerSecond);
+
+        return merchantList;
     }
 
     private ErrorWrapper getErrorDetail() {
@@ -108,7 +171,7 @@ class MerchantParticipationServiceTest {
         Error error = new Error();
         error.setSource("customer-data-api");
         error.setReasonCode("invalid data: cardProductCode");
-        error.setDescription("must match \"^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|ETH|ETL|ETM|ETN|SPP|SPS|SBJ|SBK)$\"");
+        error.setDescription("must match \"^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|SPP|SPS)$\"");
         error.setRecoverable(false);
         errors.add(error);
         Errors errs = new Errors();

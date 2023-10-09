@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 public class ApiConfiguration {
 
+
     @Value("${mastercard.api.authentication.consumer-key}")
     private String consumerKey;
 
@@ -99,7 +100,7 @@ public class ApiConfiguration {
             throw new IllegalArgumentException(e);
         }
     }
-    
+
     public JweConfig getJweConfig() {
         JweConfig config = null;
     	try {
@@ -117,6 +118,41 @@ public class ApiConfiguration {
             log.error("Exception occurred while configuration ",e);
         }
     	return config;
+    }
+
+    public JweConfig getJweConfigGetMP() {
+        JweConfig config = null;
+        try {
+            PrivateKey decryptionKey = EncryptionUtils.loadDecryptionKey(decryptionKeyFile.getFile().getAbsolutePath(), decryptionKeyAlias, decryptionKeyPassword);
+            config = JweConfigBuilder.aJweEncryptionConfig()
+                    .withDecryptionKey(decryptionKey)
+                    .withDecryptionPath("$[*]encryptedValues", "$[*]")
+                    .withEncryptedValueFieldName("encryptedValues")
+                    .build();
+            return config;
+        } catch (GeneralSecurityException | IOException | EncryptionException e) {
+            log.error("Exception occurred while configuration ",e);
+        }
+        return config;
+    }
+
+    public JweConfig getJweConfigPostMidSearches() {
+        JweConfig config = null;
+        try {
+            Certificate encryptionCertificate = EncryptionUtils.loadEncryptionCertificate(encryptionKeyFile.getFile().getAbsolutePath());
+            PrivateKey decryptionKey = EncryptionUtils.loadDecryptionKey(decryptionKeyFile.getFile().getAbsolutePath(), decryptionKeyAlias, decryptionKeyPassword);
+            config = JweConfigBuilder.aJweEncryptionConfig()
+                    .withEncryptionCertificate(encryptionCertificate)
+                    .withEncryptionPath("$.merchantLegalName", "$")
+                    .withEncryptedValueFieldName("encryptedMerchantLegalName")
+                    .withDecryptionKey(decryptionKey)
+                    .withDecryptionPath("$.encryptedMerchantLegalName", "$.merchantLegalName")
+                    .build();
+            return config;
+        } catch (GeneralSecurityException | IOException | EncryptionException e) {
+            log.error("Exception occurred while configuration ",e);
+        }
+        return config;
     }
 
 }
