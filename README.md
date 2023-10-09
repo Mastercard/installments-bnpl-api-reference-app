@@ -66,6 +66,25 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
                                        .withDecryptionPath("$.consumer.encryptedData", "$.consumer")
                                        .withEncryptedValueFieldName("cipher")
                                        .build();
+
+JWE Config for Get Merchant Particpations
+
+JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
+                                       .withDecryptionKey(decryptionKey)
+                                       .withDecryptionPath("$[*]encryptedValues", "$[*]")
+                                       .withEncryptedValueFieldName("encryptedValues")
+                                       .build();
+
+JWE Config for Post Mid Searches
+
+JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
+                                       .withEncryptionCertificate(encryptionCertificate)
+                                       .withEncryptionPath("$.merchantLegalName", "$")
+                                       .withEncryptedValueFieldName("encryptedMerchantLegalName")
+                                       .withDecryptionKey(decryptionKey)
+                                       .withDecryptionPath("$.encryptedMerchantLegalName", "$.merchantLegalName")
+                                       .build();
+
 ```
 ## Configuration <a name="configuration"></a>
 1. Create Your Account On [Mastercard Developers](https://developer.mastercard.com/) If You Don't Have Account Click On Create New Account.
@@ -96,7 +115,7 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
 
 ## Use-Cases <a name="use-cases"></a>
 1. **Merchant Participation**   
-Provides information on partner merchants with product code and IPP relationship.
+Provides information on partner merchants and status with product code and IPP relationship.
 
 2. **Approvals API**   
 The approvals should be completed within 24 hours of initiation.
@@ -121,6 +140,7 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/i
         - Use any REST API based Client to test the functionality. Below is the API exposed by this application:       
 
                 - GET <Host>/demo/merchants-participations
+                - POST <Host>/demo/merchants-mids-searches
                 - POST <Host>/demo/approvals?sync=true
                 - POST <Host>/demo/approvals?sync=false
                 - GET <Host>/demo/approvals/{plan_id}
