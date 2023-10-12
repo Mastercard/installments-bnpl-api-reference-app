@@ -16,6 +16,7 @@
     <properties>
         <java.version>11</java.version>
         <oauth1-signer-version>1.5.2</oauth1-signer-version>
+        <spring.boot.version>2.7.4</spring.boot.version>
         <okhttp-version>4.9.3</okhttp-version>
         <gson-version>2.10</gson-version>
         <gson-fire-version>1.8.5</gson-fire-version>
@@ -37,6 +38,17 @@
         <sonar.organization>mastercard</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -126,18 +138,21 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
+                    <mainClass>com.mastercard.installments.bnpl.api.reference.application.BnplApiReferenceApplication</mainClass>
                 </configuration>
+                <version>${spring.boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>${openapi-generator-version}</version>
+                <version>6.6.0</version>
                 <executions>
                     <execution>
                         <id>BNPL REST API Client</id>

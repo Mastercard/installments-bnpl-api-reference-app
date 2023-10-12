@@ -1,3 +1,5 @@
+pii-classified-country: GBR
+
 mastercard:
   api:
     environment:
