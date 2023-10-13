@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.openapitools.client.JSON;
-import org.openapitools.client.model.MerchantMidSearchParameters;
 import org.openapitools.client.model.MerchantsInner;
 import org.openapitools.client.model.PostMerchantMidSearchesRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,12 +73,10 @@ class MerchantsParticipationControllerSIT {
 
     private PostMerchantMidSearchesRequest midSearchesParams() {
         PostMerchantMidSearchesRequest midSearchRequest = new PostMerchantMidSearchesRequest();
-        MerchantMidSearchParameters merchantMidSearchParameters = new MerchantMidSearchParameters();
-        merchantMidSearchParameters.setMerchantLegalName("Merchant 123 in GBR");
-        merchantMidSearchParameters.setCountryCode("GBR");
-        merchantMidSearchParameters.setAcquirerICA("110099");
+        midSearchRequest.setMerchantLegalName("Merchant Anusha6699 in GBR");
+        midSearchRequest.setCountryCode("GBR");
+        midSearchRequest.setAcquirerICA("110099");
 
-        midSearchRequest.setActualInstance(merchantMidSearchParameters);
         return midSearchRequest;
     }
 }

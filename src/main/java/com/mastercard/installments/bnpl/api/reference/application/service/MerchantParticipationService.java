@@ -78,24 +78,8 @@ public class MerchantParticipationService {
 
     public PostMerchantMidSearches200Response postMerchantMidSearches(PostMerchantMidSearchesRequest postMerchantMidSearchesRequest, Integer offset, Integer limit) throws Exception {
         log.info("Calling Post Merchant mid searches");
-        if(!(postMerchantMidSearchesRequest.getActualInstance() instanceof MerchantMidSearchParameters)) {
-            setActualInstanceIfNotInitialized(postMerchantMidSearchesRequest);
-        }
 
         return merchantsParticipationPostMidSearchesApi.postMerchantMidSearches(postMerchantMidSearchesRequest, offset, limit);
     }
 
-    private void setActualInstanceIfNotInitialized(PostMerchantMidSearchesRequest postMerchantMidSearchesRequest) {
-        LinkedTreeMap postMerchantMidSearchesMap = (LinkedTreeMap) postMerchantMidSearchesRequest.getActualInstance();
-        Object mid = postMerchantMidSearchesMap.get("mid");
-        Object status = postMerchantMidSearchesMap.get("status");
-
-        MerchantMidSearchParameters merchantMidSearchParameters = new MerchantMidSearchParameters();
-        merchantMidSearchParameters.setMerchantLegalName(postMerchantMidSearchesMap.get("merchantLegalName") != null ? postMerchantMidSearchesMap.get("merchantLegalName").toString() : null);
-        merchantMidSearchParameters.setCountryCode(postMerchantMidSearchesMap.get("countryCode").toString());
-        merchantMidSearchParameters.setAcquirerICA(postMerchantMidSearchesMap.get("acquirerICA").toString());
-        merchantMidSearchParameters.setMid(mid != null ? mid.toString() : null);
-        merchantMidSearchParameters.setStatus(status != null ? status.toString() : null);
-        postMerchantMidSearchesRequest.setActualInstance(merchantMidSearchParameters);
-    }
 }

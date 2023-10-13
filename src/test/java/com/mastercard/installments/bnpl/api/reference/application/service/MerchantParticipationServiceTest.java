@@ -69,18 +69,10 @@ class MerchantParticipationServiceTest {
     @Test
     @DisplayName("POST mid searches - Success")
     void postMidSearchesRequest() throws Exception {
-
-        MerchantMidSearchParameters merchantMidSearchParameters = new MerchantMidSearchParameters();
-        merchantMidSearchParameters.setMerchantLegalName("merchant legal name");
-        merchantMidSearchParameters.setCountryCode("GBR");
-        merchantMidSearchParameters.setAcquirerICA("242666");
-        PostMerchantMidSearchesRequest postMidSearchesRequest = new PostMerchantMidSearchesRequest();
-        postMidSearchesRequest.setActualInstance(merchantMidSearchParameters);
-
         when(merchantsParticipationPostMidSearchesApi.postMerchantMidSearches(any(), anyInt(),
                 anyInt())).thenReturn(getPostMidSearchesResponse());
 
-        PostMerchantMidSearches200Response postMidSearchesResponse = merchantParticipationService.postMerchantMidSearches(postMidSearchesRequest, 0, 500);
+        PostMerchantMidSearches200Response postMidSearchesResponse = merchantParticipationService.postMerchantMidSearches(new PostMerchantMidSearchesRequest(), 0, 500);
         assertNotNull(postMidSearchesResponse);
     }
 
@@ -93,7 +85,7 @@ class MerchantParticipationServiceTest {
 
     @Test
     @DisplayName("getMerchantsParticipation throws exception")
-    void getMerchantsParticipationsThrowsException() throws Exception {
+    void getMerchantParticipationsThrowsException() throws Exception {
 
         ApiException apiException = new ApiException("ApiException", null, 400, null, json.serialize(getErrorDetail()));
         when(merchantsParticipationGetApi.getMerchantParticipations(anyLong(), anyInt(),
