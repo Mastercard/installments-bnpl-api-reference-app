@@ -59,7 +59,6 @@ class MerchantParticipationServiceTest {
       ReflectionTestUtils.setField(merchantParticipationService, "merchantsParticipationPostMidSearchesApi", merchantsParticipationPostMidSearchesApi);
       merchantsParticipationPostApi = mock(MerchantsParticipationApi.class);
       ReflectionTestUtils.setField(merchantParticipationService, "merchantsParticipationPostApi", merchantsParticipationPostApi);
-      ReflectionTestUtils.setField(merchantParticipationService, "piiClassifiedAlpha3CountryCode", List.of("GBR"));
     }
 
     @Test

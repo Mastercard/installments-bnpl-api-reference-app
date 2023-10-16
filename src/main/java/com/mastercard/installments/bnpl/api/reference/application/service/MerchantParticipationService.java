@@ -15,15 +15,12 @@
  */
 package com.mastercard.installments.bnpl.api.reference.application.service;
 
-import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import com.mastercard.developer.encryption.EncryptionException;
-import com.mastercard.developer.encryption.JweEncryption;
 import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
 import com.mastercard.installments.bnpl.api.reference.application.configuration.ApiConfiguration;
 import com.mastercard.installments.bnpl.api.reference.application.exception.ServiceException;
 import com.mastercard.installments.bnpl.api.reference.application.util.CryptoInterceptor;
-import com.mastercard.installments.bnpl.api.reference.application.util.EncryptMerchant;
+import com.mastercard.installments.bnpl.api.reference.application.util.MerchantParticipationInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.openapitools.client.ApiClient;
@@ -32,7 +29,6 @@ import org.openapitools.client.ApiResponse;
 import org.openapitools.client.api.MerchantsParticipationApi;
 import org.openapitools.client.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -52,22 +48,18 @@ public class MerchantParticipationService {
 
     private final MerchantsParticipationApi merchantsParticipationPostApi;
 
-    @Value("#{'${pii-classified-country}'.split('\\|')}")
-    private List<String> piiClassifiedAlpha3CountryCode;
-
-    private ApiConfiguration apiConfiguration;
-
     @Autowired
     public MerchantParticipationService(ApiConfiguration apiConfiguration) {
         log.info("Initializing Merchants Participation Service");
         this.merchantsParticipationGetApi = new MerchantsParticipationApi(setupGetMP(apiConfiguration));
         this.merchantsParticipationPostMidSearchesApi = new MerchantsParticipationApi(setupPostMidSearches(apiConfiguration));
         this.merchantsParticipationPostApi = new MerchantsParticipationApi(setupPostApi(apiConfiguration));
-        this.apiConfiguration = apiConfiguration;
     }
 
     private ApiClient setupPostApi(ApiConfiguration apiConfiguration) {
         OkHttpClient client = new OkHttpClient().newBuilder().addInterceptor(
+                new MerchantParticipationInterceptor(apiConfiguration)
+                ).addInterceptor(
                         new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
                 .build();
         return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
@@ -127,7 +119,6 @@ public class MerchantParticipationService {
 
     public ResponseEntity<Void> postMerchantParticipations(List<MerchantParticipationInner> merchantParticipations) throws ServiceException {
         log.info("Calling Post Merchants Participation API");
-        prepareMerchantParticipationPostRequest(merchantParticipations);
         try {
             ApiResponse<Void> voidApiResponse = merchantsParticipationPostApi.postMerchantParticipationWithHttpInfo(merchantParticipations);
             Map<String, List<String>> headers = voidApiResponse.getHeaders();
@@ -137,28 +128,6 @@ public class MerchantParticipationService {
         } catch (ApiException e) {
             log.info("Exception occurred while posting merchant participation {}", e.getResponseBody());
             throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
-        }
-    }
-
-    private void prepareMerchantParticipationPostRequest(List<MerchantParticipationInner> merchantParticipations) {
-        merchantParticipations.forEach(mer -> {
-            try {
-                encryptPostBodyIfNeeded(mer);
-            } catch (EncryptionException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private void encryptPostBodyIfNeeded(MerchantParticipationInner merchant) throws EncryptionException {
-        if(piiClassifiedAlpha3CountryCode.contains(merchant.getCountryCode())){
-            EncryptMerchant encryptMerchant = new EncryptMerchant(merchant.getMerchantLegalName(), merchant.getDbaNames(), merchant.getAddress());
-            String encryptPayload = JweEncryption.encryptPayload(new Gson().toJson(encryptMerchant), apiConfiguration.getJweConfigForPostMP());
-            EncryptMerchant encryptMerchant1 = new Gson().fromJson(encryptPayload, EncryptMerchant.class);
-            merchant.setMerchantLegalName(null);
-            merchant.setDbaNames(null);
-            merchant.setAddress(null);
-            merchant.setEncryptedValues(encryptMerchant1.getEncryptedMerchantLegalName());
         }
     }
 }

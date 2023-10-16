@@ -100,19 +100,19 @@ class MerchantsParticipationControllerSIT {
 
     private List<MerchantParticipationInner> postMerchantParticipationRequest(){
         List<MerchantParticipationInner> list = new ArrayList<>();
-        MerchantParticipationInner merchantParticipation = new MerchantParticipationInner();
-        merchantParticipation.setMerchantLegalName("Costco");
-        merchantParticipation.setDbaNames(List.of("ACME"));
-        merchantParticipation.setAcquirerICA("110099");
-        merchantParticipation.setNonMerchantNegotiatedParticipation("N");
-        merchantParticipation.setCountryCode("GBR");
-        merchantParticipation.setDuns("179847439");
-        merchantParticipation.setWebsiteUrl("https://www.example.com");
-        merchantParticipation.setMids(List.of("587233456781534"));
+        MerchantParticipationInner merchantParticipation2 = new MerchantParticipationInner();
+        merchantParticipation2.setMerchantLegalName("Costco");
+        merchantParticipation2.setDbaNames(List.of("ACME"));
+        merchantParticipation2.setAcquirerICA("110099");
+        merchantParticipation2.setNonMerchantNegotiatedParticipation("N");
+        merchantParticipation2.setCountryCode("GBR");
+        merchantParticipation2.setDuns("179847439");
+        merchantParticipation2.setWebsiteUrl("https://www.example.com");
+        merchantParticipation2.setMids(List.of("587233456781534"));
         List<Wallet> wallets = new ArrayList<>();
         Wallet w = new Wallet().walletAcceptance("Y").walletId(1).walletMerchantId("2353463562345 | 125346356236 | 125446356237");
         wallets.add(w);
-        merchantParticipation.setWallets(wallets);
+        merchantParticipation2.setWallets(wallets);
         Address address = new Address();
         address.setAddressLine1("line1");
         address.setAddressLine2("line2");
@@ -120,8 +120,31 @@ class MerchantsParticipationControllerSIT {
         address.setCity("Bangalore");
         address.setState("Karnataka");
         address.setPostalCode("560068");
-        merchantParticipation.setAddress(address);
-        list.add(merchantParticipation);
+        merchantParticipation2.setAddress(address);
+
+        MerchantParticipationInner merchantParticipation1 = new MerchantParticipationInner();
+        merchantParticipation1.setMerchantLegalName("Costco");
+        merchantParticipation1.setDbaNames(List.of("ACME"));
+        merchantParticipation1.setAcquirerICA("110099");
+        merchantParticipation1.setNonMerchantNegotiatedParticipation("N");
+        merchantParticipation1.setCountryCode("GBR");
+        merchantParticipation1.setDuns("179847439");
+        merchantParticipation1.setWebsiteUrl("https://www.example.com");
+        merchantParticipation1.setMids(List.of("587233456781534"));
+        List<Wallet> wallets1 = new ArrayList<>();
+        Wallet w1 = new Wallet().walletAcceptance("Y").walletId(1).walletMerchantId("2353463562345 | 125346356236 | 125446356237");
+        wallets1.add(w1);
+        merchantParticipation1.setWallets(wallets1);
+        Address address1 = new Address();
+        address1.setAddressLine1("line1");
+        address1.setAddressLine2("line2");
+        address1.setAddressLine3("line3");
+        address1.setCity("Bangalore");
+        address1.setState("Karnataka");
+        address1.setPostalCode("560068");
+        merchantParticipation1.setAddress(address1);
+        list.add(merchantParticipation2);
+        list.add(merchantParticipation1);
         return list;
     }
 }

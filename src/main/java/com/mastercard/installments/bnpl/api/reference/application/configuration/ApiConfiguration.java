@@ -66,6 +66,13 @@ public class ApiConfiguration {
     @Value("${mastercard.api.decryption.keystore-password}")
     private String decryptionKeyPassword;
 
+    @Value("#{'${pii-classified-country}'.split('\\|')}")
+    private List<String> piiClassifiedAlpha3CountryCode;
+
+    public List<String> getPiiClassifiedAlpha3CountryCode(){
+        return piiClassifiedAlpha3CountryCode;
+    }
+
     public String getConsumerKey() {
         return consumerKey;
     }
