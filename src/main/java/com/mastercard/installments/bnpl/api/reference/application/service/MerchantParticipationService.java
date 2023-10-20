@@ -20,16 +20,23 @@ import com.mastercard.installments.bnpl.api.reference.application.configuration.
 import com.mastercard.installments.bnpl.api.reference.application.exception.ServiceException;
 import com.mastercard.installments.bnpl.api.reference.application.util.CryptoInterceptor;
 import com.mastercard.developer.interceptors.OkHttpOAuth1Interceptor;
+import org.openapitools.client.ApiResponse;
 import org.openapitools.client.api.MerchantsParticipationApi;
+import org.openapitools.client.model.MerchantParticipationsInner;
+import org.openapitools.client.model.MerchantsInner;
+import org.openapitools.client.model.PostMerchantMidSearches200Response;
+import org.openapitools.client.model.PostMerchantMidSearchesRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.google.gson.internal.LinkedTreeMap;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
-import org.openapitools.client.model.*;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,18 +44,31 @@ public class MerchantParticipationService {
 
     private final MerchantsParticipationApi merchantsParticipationGetApi;
     private final MerchantsParticipationApi merchantsParticipationPostMidSearchesApi;
+    private final MerchantsParticipationApi merchantsParticipationPostApi;
+
 
     @Autowired
     public MerchantParticipationService(ApiConfiguration apiConfiguration) {
         log.info("Initializing Merchants Participation Service");
+        this.merchantsParticipationPostApi = new MerchantsParticipationApi(setupPostApi(apiConfiguration));
         this.merchantsParticipationGetApi = new MerchantsParticipationApi(setupGetMP(apiConfiguration));
         this.merchantsParticipationPostMidSearchesApi = new MerchantsParticipationApi(setupPostMidSearches(apiConfiguration));
     }
 
+    private ApiClient setupPostApi(ApiConfiguration apiConfiguration) {
+        OkHttpClient client = new OkHttpClient().newBuilder().addInterceptor(
+                        new CryptoInterceptor(apiConfiguration.getJweConfigForPostMerchantParticipations(), apiConfiguration.getPiiClassifiedAlpha3CountryCodes())
+                ).addInterceptor(
+                        new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
+                .build();
+        return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
+    }
+
     private ApiClient setupPostMidSearches(ApiConfiguration apiConfiguration) {
         OkHttpClient client = new OkHttpClient().newBuilder().addInterceptor(
-                new CryptoInterceptor(apiConfiguration.getJweConfigPostMidSearches())).addInterceptor(
-                new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
+                        new CryptoInterceptor(apiConfiguration.getJweConfigPostMidSearches(), apiConfiguration.getPiiClassifiedAlpha3CountryCodes()))
+                .addInterceptor(
+                        new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
                 .build();
 
         return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
@@ -56,11 +76,25 @@ public class MerchantParticipationService {
 
     private ApiClient setupGetMP(ApiConfiguration apiConfiguration) {
         OkHttpClient client = new OkHttpClient().newBuilder().addInterceptor(
-                new CryptoInterceptor(apiConfiguration.getJweConfigGetMP())).addInterceptor(
-                new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
+                        new CryptoInterceptor(apiConfiguration.getJweConfigGetMerchantParticipations())).addInterceptor(
+                        new OkHttpOAuth1Interceptor(apiConfiguration.getConsumerKey(), apiConfiguration.getSigningKey()))
                 .build();
 
         return new ApiClient().setHttpClient(client).setBasePath(apiConfiguration.getBasePath());
+    }
+
+    public ResponseEntity<Void> postMerchantParticipations(List<MerchantParticipationsInner> merchantParticipations) throws ServiceException {
+        log.info("Calling Post Merchants Participation API");
+        try {
+            ApiResponse<Void> voidApiResponse = merchantsParticipationPostApi.postMerchantParticipationsWithHttpInfo(merchantParticipations);
+            Map<String, List<String>> headers = voidApiResponse.getHeaders();
+            HttpHeaders responseHeaders = new HttpHeaders();
+            headers.keySet().forEach(key -> responseHeaders.add(key, headers.get(key).stream().collect(Collectors.joining(","))));
+            return ResponseEntity.status(voidApiResponse.getStatusCode()).headers(responseHeaders).build();
+        } catch (ApiException e) {
+            log.info("Exception occurred while posting merchant participation {}", e.getResponseBody());
+            throw new ServiceException(e.getMessage(), deserializeErrors(e.getResponseBody()));
+        }
     }
 
     public List<MerchantsInner> getMerchantParticipations(Long requestId, Integer offset, Integer limit) throws ServiceException {
@@ -78,7 +112,6 @@ public class MerchantParticipationService {
 
     public PostMerchantMidSearches200Response postMerchantMidSearches(PostMerchantMidSearchesRequest postMerchantMidSearchesRequest, Integer offset, Integer limit) throws Exception {
         log.info("Calling Post Merchant mid searches");
-
         return merchantsParticipationPostMidSearchesApi.postMerchantMidSearches(postMerchantMidSearchesRequest, offset, limit);
     }
 

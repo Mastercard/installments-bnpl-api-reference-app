@@ -1,6 +1,7 @@
 mastercard:
   api:
     environment:
+      # To be updated with Sandbox endpoint(https://sandbox.api.mastercard.com/installments) after MTF deployment
       base-path: https://sandbox.api.mastercard.com/installments  # Refers to sandbox endpoint
     authentication:
       key-file: classpath:nameOfYourP12File.p12 # Copy .p12 file in src/main/resources and set value as classpath:nameOfYourP12File.p12
@@ -13,3 +14,5 @@ mastercard:
       key-file: classpath:your-mastercard-encryption-key.p12 #Copy mastercard encryption .p12 file in src/main/resources and set value as classpath:nameOfYourMastercardtEncryptionP12File.p12
       keystore-alias: keyalias
       keystore-password: your-encryption-keystore-password
+
+pii-classified-country: GBR
