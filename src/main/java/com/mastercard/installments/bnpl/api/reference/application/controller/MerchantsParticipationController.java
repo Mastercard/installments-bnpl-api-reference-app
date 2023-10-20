@@ -18,25 +18,39 @@ package com.mastercard.installments.bnpl.api.reference.application.controller;
 
 import com.mastercard.installments.bnpl.api.reference.application.exception.ServiceException;
 import com.mastercard.installments.bnpl.api.reference.application.service.MerchantParticipationService;
-import org.openapitools.client.model.MerchantParticipation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.openapitools.client.model.MerchantParticipationsInner;
+import org.openapitools.client.model.MerchantsInner;
+import org.openapitools.client.model.PostMerchantMidSearches200Response;
+import org.openapitools.client.model.PostMerchantMidSearchesRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/demo")
 class MerchantsParticipationController {
 
-    @Autowired
-    private MerchantParticipationService merchantParticipationService;
+    private final MerchantParticipationService merchantParticipationService;
 
-
-    @GetMapping("/merchants-participations")
-    public MerchantParticipation getMerchantsParticipations(@RequestParam(value = "card_product_code") String cardProductCode, @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset, @RequestParam(value = "limit", required = false, defaultValue = "500") Integer limit) throws ServiceException {
-        return merchantParticipationService.getMerchantsParticipation(cardProductCode, offset, limit);
+    MerchantsParticipationController(MerchantParticipationService merchantParticipationService) {
+        this.merchantParticipationService = merchantParticipationService;
     }
 
+    @PostMapping("/merchants/participations")
+    public ResponseEntity<Void> postMerchantsParticipations(@Valid @RequestBody List<MerchantParticipationsInner> merchantParticipation) throws ServiceException {
+        return merchantParticipationService.postMerchantParticipations(merchantParticipation);
+    }
+
+    @GetMapping("/merchants/participations")
+    public List<MerchantsInner> getMerchantParticipations(@RequestParam(value = "request_id", required = false) Long requestId, @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset, @RequestParam(value = "limit", required = false, defaultValue = "500") Integer limit) throws ServiceException {
+        return merchantParticipationService.getMerchantParticipations(requestId, offset, limit);
+    }
+
+    @PostMapping("/merchants/mids/searches")
+    public PostMerchantMidSearches200Response postMerchantMidSearches(@Valid @RequestBody PostMerchantMidSearchesRequest postMerchantMidSearchesRequest, @Valid @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset, @Valid @RequestParam(value = "limit", required = false, defaultValue = "500") Integer limit ) throws Exception {
+        return merchantParticipationService.postMerchantMidSearches(postMerchantMidSearchesRequest, offset, limit);
+    }
 
 }
