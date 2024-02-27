@@ -117,10 +117,10 @@ public class MerchantParticipationService {
         postMerchantMidSearchesRequest.setActualInstance(merchantMidSearchParameters);
     }
 
-    public ResponseEntity<Void> postMerchantParticipations(List<MerchantParticipationInner> merchantParticipations) throws ServiceException {
+    public ResponseEntity<Void> postMerchantParticipations(List<MerchantParticipationsInner> merchantParticipations) throws ServiceException {
         log.info("Calling Post Merchants Participation API");
         try {
-            ApiResponse<Void> voidApiResponse = merchantsParticipationPostApi.postMerchantParticipationWithHttpInfo(merchantParticipations);
+            ApiResponse<Void> voidApiResponse = merchantsParticipationPostApi.postMerchantParticipationsWithHttpInfo(merchantParticipations);
             Map<String, List<String>> headers = voidApiResponse.getHeaders();
             HttpHeaders responseHeaders = new HttpHeaders();
             headers.keySet().forEach(key -> responseHeaders.add(key, headers.get(key).stream().collect(Collectors.joining(","))));

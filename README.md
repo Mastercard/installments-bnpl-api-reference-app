@@ -98,6 +98,8 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
 1. **Merchant Participation**   
 Provides information on partner merchants with product code and IPP relationship.
 
+**Note**: For PII countries(like GBR) where we need to pass the JWE encrypted payload to Merchant Participation APIs, this reference app has capability to do JWE encryption before sending the request. If we are directly calling API, one may need to explicitly encrypt and send the request(Refer MerchantParticipationInterceptor class).  
+
 2. **Approvals API**   
 The approvals should be completed within 24 hours of initiation.
 

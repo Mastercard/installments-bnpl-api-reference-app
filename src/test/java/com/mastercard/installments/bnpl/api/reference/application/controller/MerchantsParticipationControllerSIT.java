@@ -98,9 +98,9 @@ class MerchantsParticipationControllerSIT {
         return midSearchRequest;
     }
 
-    private List<MerchantParticipationInner> postMerchantParticipationRequest(){
-        List<MerchantParticipationInner> list = new ArrayList<>();
-        MerchantParticipationInner merchantParticipation2 = new MerchantParticipationInner();
+    private List<MerchantParticipationsInner> postMerchantParticipationRequest(){
+        List<MerchantParticipationsInner> list = new ArrayList<>();
+        MerchantParticipationsInner merchantParticipation2 = new MerchantParticipationsInner();
         merchantParticipation2.setMerchantLegalName("Costco");
         merchantParticipation2.setDbaNames(List.of("ACME"));
         merchantParticipation2.setAcquirerICA("110099");
@@ -122,7 +122,7 @@ class MerchantsParticipationControllerSIT {
         address.setPostalCode("560068");
         merchantParticipation2.setAddress(address);
 
-        MerchantParticipationInner merchantParticipation1 = new MerchantParticipationInner();
+        MerchantParticipationsInner merchantParticipation1 = new MerchantParticipationsInner();
         merchantParticipation1.setMerchantLegalName("Costco");
         merchantParticipation1.setDbaNames(List.of("ACME"));
         merchantParticipation1.setAcquirerICA("110099");

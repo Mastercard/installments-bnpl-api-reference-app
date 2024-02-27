@@ -9,7 +9,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
-import org.openapitools.client.model.MerchantParticipationInner;
+import org.openapitools.client.model.MerchantParticipationsInner;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +40,7 @@ public class MerchantParticipationInterceptor extends OkHttpJweInterceptor {
       requestPayload = buffer.readUtf8();
     }
 
-    List<MerchantParticipationInner> list = new Gson().fromJson(requestPayload, new TypeToken<List<MerchantParticipationInner>>() {}.getType());
+    List<MerchantParticipationsInner> list = new Gson().fromJson(requestPayload, new TypeToken<List<MerchantParticipationsInner>>() {}.getType());
     Request.Builder requestBuilder = request.newBuilder();
     list.forEach(mer -> {
       if(apiConfig.getPiiClassifiedAlpha3CountryCode().contains(mer.getCountryCode())){
@@ -56,7 +56,7 @@ public class MerchantParticipationInterceptor extends OkHttpJweInterceptor {
 
   }
 
-  private void encryptRequestBody(Request request, Request.Builder requestBuilder, MerchantParticipationInner mer) {
+  private void encryptRequestBody(Request request, Request.Builder requestBuilder, MerchantParticipationsInner mer) {
     try {
       EncryptMerchant encryptMerchant = new EncryptMerchant(mer.getMerchantLegalName(), mer.getDbaNames(), mer.getAddress());
       String encryptedPayload = encryptPayload(request, requestBuilder, new Gson().toJson(encryptMerchant));

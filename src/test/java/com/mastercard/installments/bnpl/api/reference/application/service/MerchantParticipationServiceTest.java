@@ -93,9 +93,9 @@ class MerchantParticipationServiceTest {
   @DisplayName("POST Merchants Participations API - Success")
   void postMerchantsRequest() throws Exception {
 
-    List<MerchantParticipationInner> merchantParticipationInners = postMerchantParticipationRequest();
+    List<MerchantParticipationsInner> merchantParticipationInners = postMerchantParticipationRequest();
 
-    when(merchantsParticipationPostApi.postMerchantParticipationWithHttpInfo(anyList())).thenReturn(getApiResponse());
+    when(merchantsParticipationPostApi.postMerchantParticipationsWithHttpInfo(anyList())).thenReturn(getApiResponse());
     ResponseEntity<Void> voidResponseEntity = merchantParticipationService.postMerchantParticipations(merchantParticipationInners);
     assertEquals(202, voidResponseEntity.getStatusCode().value());
     assertNotNull(voidResponseEntity.getHeaders().get("Location"));
@@ -117,7 +117,7 @@ class MerchantParticipationServiceTest {
     void postMerchantsParticipationsThrowsException() throws Exception {
 
         ApiException apiException = new ApiException("ApiException", null, 400, null, json.serialize(getErrorDetail()));
-      when(merchantsParticipationPostApi.postMerchantParticipationWithHttpInfo(anyList())).thenThrow(apiException);
+      when(merchantsParticipationPostApi.postMerchantParticipationsWithHttpInfo(anyList())).thenThrow(apiException);
 
         Assertions.assertThrows(ServiceException.class,
                                 () -> merchantParticipationService.postMerchantParticipations(anyList()));
@@ -212,9 +212,9 @@ class MerchantParticipationServiceTest {
         return errorWrapper;
     }
 
-  private List<MerchantParticipationInner> postMerchantParticipationRequest(){
-    List<MerchantParticipationInner> list = new ArrayList<>();
-    MerchantParticipationInner merchantParticipation = new MerchantParticipationInner();
+  private List<MerchantParticipationsInner> postMerchantParticipationRequest(){
+    List<MerchantParticipationsInner> list = new ArrayList<>();
+    MerchantParticipationsInner merchantParticipation = new MerchantParticipationsInner();
     merchantParticipation.setMerchantLegalName("Costco");
     merchantParticipation.setDbaNames(List.of("ACME"));
     merchantParticipation.setAcquirerICA("110099");

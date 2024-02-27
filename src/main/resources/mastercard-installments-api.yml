@@ -34,14 +34,12 @@ paths:
     post:
       tags:
         - Merchants Participation
-      summary: Allows a registered partner to create or update merchant participation details.
+      summary: Allows a registered partner to create or update merchant participation details
       description:
         Allows registered partners to submit merchant participation details. Merchant participation states that a merchant has opted in or opted out from Buy Now Pay Later. This endpoint allows the client to create a merchant with participation. A unique merchant will be a combination of acquirerICA, merchantLegalName, and countryCode. This endpoint also allows the updating of existing merchant participation information like adding more mids in a merchant object, changing the value of the opt-In flag, updating address fields, and updating wallet information. The acquirerICA, merchantLegalName, and countryCode fields are used to identify an existing merchant. If the merchant is already present, the mids provided in the request will be appended to the existing set of mids. The duns, dbaNames and websiteUrl fields cannot be updated hence these fields either must be null or empty or they must be the same as existing one in the update request otherwise this API will throw a 400 bad request error.  Once the request is validated and accepted, this API returns the ID of this request in the 'request_id' response header, and the request will be processed asynchronously. Use the GET /merchants/participation endpoint to check the status of the request by using the request_id. When submitting a participation request, the end user can initiate calls with various numbers of merchants and MIDs. However, it's crucial to ensure that the total payload size remains under 700 MB, as the API will generate an error otherwise.
-
-      operationId: postMerchantParticipation
-
+      operationId: postMerchantParticipations
       requestBody:
-        $ref: '#/components/requestBodies/MerchantParticipation'
+        $ref: '#/components/requestBodies/MerchantParticipations'
 
       responses:
         '202':
@@ -208,7 +206,7 @@ components:
     request_id:
       in: query
       name: request_id
-      description:  The request ID is obtained by calling POST /merchants/participations API.
+      description: The request ID is obtained by calling POST /merchants/participations API.
       required: false
       schema:
         type: integer
@@ -255,17 +253,16 @@ components:
       example: "3d56f5a7-db48-41f0-875e-30920e8465f3"
 
   requestBodies:
-    MerchantParticipation:
-      description: The request object that contains list of merchant participation reference objects.
+    MerchantParticipations:
+      description: The request object that contains a list of merchant participation reference objects.
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/MerchantParticipation'
+            $ref: '#/components/schemas/MerchantParticipations'
           examples:
-            MerchantParticipation:
-              $ref: '#/components/examples/MerchantParticipation'
-
+            MerchantParticipations:
+              $ref: '#/components/examples/MerchantParticipations'
     MerchantSearchParameters:
       description: The request object that contains parameters to search merchant objects
       required: true
@@ -280,7 +277,6 @@ components:
               $ref: '#/components/examples/MerchantSearchParameters'
             EncryptedMerchantSearchParameters:
               $ref: '#/components/examples/EncryptedMerchantSearchParameters'
-
     MerchantMidSearchParameters:
       description: The request object that contains parameters to search mids for a given merchant.
       required: true
@@ -370,6 +366,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Merchants'
+
           examples:
             Merchants:
               $ref: '#/components/examples/Merchants'
@@ -418,6 +415,8 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorWrapper'
           examples:
+            BadRequestError:
+              $ref: '#/components/examples/BadRequestError'
             InvalidCardProductError:
               $ref: '#/components/examples/InvalidCardProductError'
             InvalidFieldFormat:
@@ -521,8 +520,8 @@ components:
       description: |
         The Plan is found and returned based on plan ID.
   schemas:
-    MerchantParticipation:
-      title: MerchantParticipation
+    MerchantParticipations:
+      title: MerchantParticipations
       type: array
       minItems: 1
       maxItems: 30
@@ -611,6 +610,8 @@ components:
       properties:
         encryptedMerchantLegalName:
           $ref: '#/components/schemas/encryptedMerchantLegalName'
+        decryptedMerchantLegalName:
+          $ref: '#/components/schemas/decryptedMerchantLegalName'
         countryCode:
           $ref: '#/components/schemas/countryCode'
         acquirerICA:
@@ -619,6 +620,60 @@ components:
           $ref: '#/components/schemas/mid'
         status:
           $ref: '#/components/schemas/status'
+
+    EncryptedMerchantParticipation:
+      title: EncryptedMerchantParticipation
+      type: object
+      description: Merchant participation reference having merchantLegalName, dbaNames, and address are contained and encrypted in an object.
+      required:
+        - countryCode
+        - acquirerICA
+      properties:
+        encryptedValues:
+          $ref: '#/components/schemas/encryptedValues'
+        countryCode:
+          $ref: '#/components/schemas/countryCode'
+        acquirerICA:
+          $ref: '#/components/schemas/acquirerICA'
+        mids:
+          $ref: '#/components/schemas/mids'
+        nonMerchantNegotiatedParticipation:
+          $ref: '#/components/schemas/nonMerchantNegotiatedParticipation'
+        duns:
+          $ref: '#/components/schemas/duns'
+        websiteUrl:
+          $ref: '#/components/schemas/websiteUrl'
+        wallets:
+          $ref: '#/components/schemas/wallets'
+
+    MerchantParticipation:
+      title: MerchantParticipation
+      type: object
+      description: Merchant participation reference
+      required:
+        - countryCode
+        - acquirerICA
+      properties:
+        merchantLegalName:
+          $ref: '#/components/schemas/merchantLegalName'
+        countryCode:
+          $ref: '#/components/schemas/countryCode'
+        acquirerICA:
+          $ref: '#/components/schemas/acquirerICA'
+        dbaNames:
+          $ref: '#/components/schemas/dbaNames'
+        mids:
+          $ref: '#/components/schemas/mids'
+        nonMerchantNegotiatedParticipation:
+          $ref: '#/components/schemas/nonMerchantNegotiatedParticipation'
+        duns:
+          $ref: '#/components/schemas/duns'
+        websiteUrl:
+          $ref: '#/components/schemas/websiteUrl'
+        wallets:
+          $ref: '#/components/schemas/wallets'
+        address:
+          $ref: '#/components/schemas/Address'
 
     MidDetailsPage:
       title: MidDetailsPage
@@ -642,7 +697,7 @@ components:
     EncryptedMidDetailsPage:
       title: EncryptedMidDetailsPage
       type: object
-      description: Contains mids of a merchant. Merchant’s legal name is encrypted.
+      description: Contains mids of a merchant. Merchant's legal name is encrypted.
       required:
         - acquirerICA
         - countryCode
@@ -826,6 +881,14 @@ components:
           $ref: '#/components/schemas/walletMerchantId'
 
     merchantLegalName:
+      type: string
+      minLength: 1
+      maxLength: 300
+      description: Legally registered name of the merchant.
+      pattern: '^.{1,300}'
+      example: Wallmart
+
+    decryptedMerchantLegalName:
       type: string
       minLength: 1
       maxLength: 300
@@ -1043,6 +1106,150 @@ components:
       type: integer
       example: 5
 
+    LegacyMerchantParticipation:
+      title: LegacyMerchantParticipation
+      type: object
+      description:
+        Contains the list of merchant who have opted in or opted out for a card product
+      required:
+        - merchants
+      properties:
+        count:
+          description: The number of items in this batch (the size of the item array).
+          type: integer
+          example: 2
+        offset:
+          description: The number of items you asked the start of the list to be offset from.
+          type: integer
+          example: 1
+        limit:
+          description: The number of items you asked the list to be limited to.
+          type: integer
+          example: 2
+        total:
+          description: The total number of items in the collection.
+          type: integer
+          example: 5
+        merchants:
+          $ref: '#/components/schemas/LegacyMerchants'
+
+    LegacyMerchants:
+      title: LegacyMerchants
+      type: array
+      minItems: 1
+      maxItems: 500
+      description:
+        List of merchant objects
+      items:
+        $ref: '#/components/schemas/LegacyMerchant'
+
+    LegacyMerchant:
+      type: object
+      description: Merchant details
+      required:
+        - customerId
+        - companyName
+        - countryCode
+        - products
+        - lastUpdateDatetime
+      properties:
+        customerId:
+          type: integer
+          format: int64
+          minLength: 1
+          maxLength: 10
+          description: Primary key to identify unique company or merchant, assigned by Mastercard.
+          example: 9870152892
+        duns:
+          type: string
+          minLength: 1
+          maxLength: 9
+          description: A unique identifier assigned by Dun and Bradstreet used to identify a business.
+          example: 879847426
+        acceptorIds:
+          type: array
+          minItems: 1
+          description: A value assigned by Mastercard for transaction data integrity purposes
+          items:
+            type: string
+          example: [ "123456","789101" ]
+        companyName:
+          type: string
+          minLength: 1
+          maxLength: 300
+          description: Legally registered name of the merchant.
+          pattern: '^.{1,300}'
+          example: Wallmart
+        dbaName:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: Trade name used by merchant to conduct business, and is known to the consumer.
+          example: ACME
+        customerReferenceUrlAddress:
+          type: string
+          minLength: 1
+          maxLength: 100
+          pattern: '^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]'
+          description: The URL of the merchant supplied to the acquirer.
+          example: https://www.acme-company.com
+        countryCode:
+          type: string
+          minLength: 3
+          maxLength: 3
+          pattern: '^[A-Za-z]{3}$'
+          description: Legally registered address country. Refer to (https://www.iso.org/obp/ui/#search) for ISO 3166 alpha 3 code values.
+          example: USA
+        lastUpdateDatetime:
+          type: string
+          format: date-time
+          description: Time when this record is last updated,this field will be as per ISO8601 and RFC 3339. (https://confluence.mastercard.int/display/GoldenAPI/Mastercard+Global+API+Standards+Document#MastercardGlobalAPIStandardsDocument-DateTimeFormatting).
+          example: '2021-11-02T12:31:26'
+        wallets:
+          $ref: '#/components/schemas/LegacyWallets'
+        products:
+          $ref: '#/components/schemas/LegacyCardProducts'
+        address:
+          $ref: '#/components/schemas/LegacyAddress'
+
+    LegacyWallets:
+      title: Wallets
+      type: array
+      minItems: 1
+      maxItems: 500
+      description:
+        API will return the list of wallet name, wallet acceptance, and wallet merchant id.
+      items:
+        $ref: '#/components/schemas/LegacyWallet'
+
+    LegacyWallet:
+      type: object
+      description: Object representing registering a Merchant
+      properties:
+        walletName:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Wallet provider that have a relationship with the given merchant
+          example: Apple Pay
+        walletAcceptance:
+          type: string
+          maxLength: 1
+          minLength: 1
+          pattern: ^(?:Y|N)$
+          description: Wallet acceptance for the given wallet provider
+          example: Y
+        walletMerchantId:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: Merchant identifier(s) as defined by the wallet provider
+          example: 235346356234
+      example:
+        walletName: Apple Pay
+        walletAcceptance: Y
+        walletMerchantId: 235346356234 | 125346356236 | 125446356237
+
     RequestError:
       title: RequestError
       type: object
@@ -1056,6 +1263,97 @@ components:
           $ref: '#/components/schemas/httpErrorStatusCode'
         errors:
           $ref: '#/components/schemas/errors'
+
+    LegacyCardProducts:
+      title: CardProducts
+      type: array
+      minItems: 1
+      maxItems: 500
+      description:
+        List of card product objects
+      items:
+        $ref: '#/components/schemas/LegacyCardProduct'
+
+    LegacyCardProduct:
+      type: object
+      description: Object representing card product
+      required:
+        - productCode
+        - optIn
+      properties:
+        productCode:
+          type: string
+          minLength: 1
+          maxLength: 3
+          pattern: ^(?:ETA|ETB|ETC|ETD|ETE|ETF|ETG|ETH|ETI|ETJ|ETK|ETL|ETM|ETN|SPP|SPS|SBJ|SBK)$
+          description: Codes of the products such as ETA - ETN, SPP, SPS, SBJ, SBK
+          example: SPS
+        optIn:
+          type: string
+          maxLength: 1
+          minLength: 1
+          pattern: ^(?:Y|N)$
+          description: Merchant opt-in or opt-out preference
+          example: Y
+      example:
+        productCode: SPS
+        optIn: Y
+
+    LegacyAddress:
+      title: Address
+      type: object
+      description:
+        Object representing a merchant address
+      required:
+        - addressLine1
+        - city
+        - state
+        - postalCode
+      properties:
+        addressLine1:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Legally registered address of the merchant
+          example: 600 WEST
+        addressLine2:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Second address
+          example: SECTOR 5
+        addressLine3:
+          type: string
+          minLength: 1
+          maxLength: 80
+          description: Third address line
+          example: SUITE 775
+        city:
+          type: string
+          minLength: 1
+          maxLength: 30
+          description: Legally registered address city.
+          example: St Peters
+        state:
+          type: string
+          minLength: 2
+          maxLength: 3
+          description: Legally registered address state or province. Refer to (https://www.iso.org/obp/ui/#search) for ISO 3166-2 code values.
+          example: QLD
+        postalCode:
+          type: string
+          minLength: 1
+          maxLength: 20
+          description: Legally registered address postal code.
+          example: 85001
+
+      example:
+        addressLineOne: 600 WEST
+        addressLineTwo: SECTOR 5
+        addressLineThree: SUITE 775
+        city: Chicago
+        state: MO
+        postalCode: 85001
 
     errors:
       title: errors
@@ -1338,7 +1636,7 @@ components:
             The application name that generated this error.
           minLength: 1
           maxLength: 100
-          example: Mastercard Installments APIs
+          example: merchant-participation-api
         ReasonCode:
           type: string
           description:
@@ -1368,7 +1666,7 @@ components:
             user with diagnosing errors.
           minLength: 0
           maxLength: 5000
-          example: paymentCardId size must be between 36 and 36
+          example: acquirerICA size must be less then 11
 
     Consumer:
       type: object
@@ -1623,7 +1921,7 @@ components:
       maxItems: 50
 
   examples:
-    MerchantParticipation:
+    MerchantParticipations:
       value:
         - merchantLegalName: Example Mart
           countryCode: USA
@@ -1704,6 +2002,44 @@ components:
           duns: '239847426'
           websiteUrl: https://www.acmeexample.com
 
+    LegacyMerchantParticipation:
+      value:
+        count: 2
+        offset: 1
+        limit: 2
+        total: 5
+        merchants:
+          - customerId: 9870152892
+            duns: 879847416
+            acceptorIds:
+              - 54331
+              - 123456
+            companyName: Wallmart
+            dbaName: ACME
+            companyUrl: www.momentum-bike.com
+            country: USA
+            postalCode: 99202
+            wallets:
+              - walletName: Apple Pay
+                walletAcceptance: Y
+                walletMerchantId: 235346356234
+              - walletName: Google Pay
+                walletAcceptance: N
+                walletMerchantId: 125346356236
+            address:
+              addressLineOne: 600 WEST
+              addressLineTwo: SECTOR 5
+              addressLineThree: SUITE 775
+              city: Chicago
+              state: MO
+              postalCode: 85001
+            products:
+              - productCode: SPS
+                optIn: N
+              - productCode: ETA
+                optIn: Y
+            lastUpdateDatetime: 2020-07-16T19:20+01:00
+
     RequestError:
       value:
         - requestEndpoint: "/merchants/participations"
@@ -1770,6 +2106,16 @@ components:
           - mid: '567123456789124'
             status: COMPLETED
 
+    BadRequestError:
+      value:
+        Errors:
+          Error:
+            - Source: merchant-participation-api
+              ReasonCode: invalid.request.parameter
+              Description: One of the request parameters is invalid, try again with the correct request.
+              Recoverable: false
+              Details: acquirerICA size must be less than 11
+
     InvalidRequestIdError:
       value:
         Errors:
@@ -1789,11 +2135,12 @@ components:
               Description: request id provided in the request does not exist.
               Recoverable: false
               Details: ''
+
     AccountNotRegisteredError:
       value:
         Errors:
           Error:
-            - Source: Mastercard Installments API's
+            - Source: merchant-participation-api
               ReasonCode: account.not.registered
               Description:
                 We cannot find the account that you are using to access this
@@ -1801,27 +2148,30 @@ components:
                 associate if you have already registered with us earlier.
               Recoverable: false
               Details: ''
+
     ForbiddenError:
       value:
         Errors:
           Error:
-            - Source: Mastercard Installments API's
+            - Source: merchant-participation-api
               ReasonCode: forbidden
               Description:
                 Your account is not approved to access the API or resource, kindly contact your
                 Mastercard associate to get approval.
               Recoverable: false
               Details: ''
+
     NotAcceptableHeader:
       value:
         Errors:
           Error:
-            - Source: Mastercard Installments API's
+            - Source: merchant-participation-api
               ReasonCode: not.acceptable.header
               Description: >-
                 Accept header value is not application/json.
               Recoverable: false
               Details: ''
+
     InvalidCardProductError:
       value:
         Errors:
@@ -1831,6 +2181,7 @@ components:
               Description: Product SPP is not available for the IND country
               Recoverable: false
               Details: ''
+
     ConsumerSelectedOffer:
       description: This example shows a consumer-selected offer that is approved by the lender.
       value:
