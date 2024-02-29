@@ -109,7 +109,7 @@ This operation returns a BNPL installment plan based on selected plan id provide
 The API response contains an encrypted value for the Consumer object, 
 and the issuer needs to decrypt the response using Mastercard client encryption key.
 
-More details can be found [here](https://developer.mastercard.com/drafts/installments-for-bnpl/staging/documentation/use-cases/).    
+More details can be found [here](https://developer.mastercard.com/installments-for-bnpl/documentation/use-cases/).    
 
 ## Execute the Use-Cases   <a name="execute-the-use-cases"></a>
 1. Run ```mvn clean install``` from the root of the project directory.
@@ -131,11 +131,11 @@ More details can be found [here](https://developer.mastercard.com/drafts/install
                                                       
 ## Service Documentation <a name="documentation"></a>
 
-Mastercard Installments documentation can be found [here](https://developer.mastercard.com/drafts/installments-for-bnpl/staging/documentation/).  
+Mastercard Installments documentation can be found [here](https://developer.mastercard.com/installments-for-bnpl/documentation/).  
 
 
 ## API Reference <a name="api-reference"></a>
-The Swagger API specification can be found [here](https://developer.mastercard.com/drafts/installments-for-bnpl/staging/documentation/api-reference/).  
+The Swagger API specification can be found [here](https://developer.mastercard.com/installments-for-bnpl/documentation/api-reference/).  
 
 ## Support <a name="support"></a>
 Please send an email to **apisupport@mastercard.com** with any questions or feedback you may have.  
