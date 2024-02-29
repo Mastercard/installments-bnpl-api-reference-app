@@ -98,6 +98,8 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
 1. **Merchant Participation**   
 Provides information on partner merchants with product code and IPP relationship.
 
+**Note**: For PII countries(like GBR) where we need to pass the JWE encrypted payload to Merchant Participation APIs, this reference app has capability to do JWE encryption before sending the request. If we are directly calling API, one may need to explicitly encrypt and send the request(Refer MerchantParticipationInterceptor class).  
+
 2. **Approvals API**   
 The approvals should be completed within 24 hours of initiation.
 
@@ -107,7 +109,7 @@ This operation returns a BNPL installment plan based on selected plan id provide
 The API response contains an encrypted value for the Consumer object, 
 and the issuer needs to decrypt the response using Mastercard client encryption key.
 
-More details can be found [here](https://stage.developer.mastercard.com/drafts/installments-for-bnpl/staging/documentation/use-cases/).    
+More details can be found [here](https://developer.mastercard.com/installments-for-bnpl/documentation/use-cases/).    
 
 ## Execute the Use-Cases   <a name="execute-the-use-cases"></a>
 1. Run ```mvn clean install``` from the root of the project directory.
@@ -129,11 +131,11 @@ More details can be found [here](https://stage.developer.mastercard.com/drafts/i
                                                       
 ## Service Documentation <a name="documentation"></a>
 
-Mastercard Installments documentation can be found [here](https://stage.developer.mastercard.com/drafts/installments-for-bnpl/staging/documentation/).  
+Mastercard Installments documentation can be found [here](https://developer.mastercard.com/installments-for-bnpl/documentation/).  
 
 
 ## API Reference <a name="api-reference"></a>
-The Swagger API specification can be found [here](https://stage.developer.mastercard.com/drafts/installments-for-bnpl/staging/documentation/api-reference/).  
+The Swagger API specification can be found [here](https://developer.mastercard.com/installments-for-bnpl/documentation/api-reference/).  
 
 ## Support <a name="support"></a>
 Please send an email to **apisupport@mastercard.com** with any questions or feedback you may have.  

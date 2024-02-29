@@ -1,15 +1,17 @@
+pii-classified-country: GBR
+
 mastercard:
   api:
     environment:
       base-path: https://sandbox.api.mastercard.com/installments  # Refers to sandbox endpoint
     authentication:
-      key-file: classpath:nameOfYourP12File.p12 # Copy .p12 file in src/main/resources and set value as classpath:nameOfYourP12File.p12
-      consumer-key: your-consumer-key # Copy the Consumer key from "Sandbox/Production Keys" section on your project page
-      keystore-alias: keyalias  # Alias of your key. Default key alias for sandbox is keyalias
-      keystore-password: your-keystore-password # Password of your Keystore. Default keystore password for sandbox project is keystorepassword
+      key-file:  # Copy .p12 file in src/main/resources and set value as classpath:nameOfYourP12File.p12
+      consumer-key: # Copy the Consumer key from "Sandbox/Production Keys" section on your project page
+      keystore-alias: # Alias of your key. Default key alias for sandbox is keyalias
+      keystore-password: # Password of your Keystore. Default keystore password for sandbox project is keystorepassword
     encryption:
-      key-file: classpath:nameOfYourClientEncryptionPemFile.pem  #Copy client encryption .pem file in src/main/resources and set value as classpath:nameOfYourClientEncryptionPemFile.pem
+      key-file: #Copy client encryption .pem file in src/main/resources and set value as classpath:nameOfYourClientEncryptionPemFile.pem
     decryption:
-      key-file: classpath:your-mastercard-encryption-key.p12 #Copy mastercard encryption .p12 file in src/main/resources and set value as classpath:nameOfYourMastercardtEncryptionP12File.p12
-      keystore-alias: keyalias
-      keystore-password: your-encryption-keystore-password
+      key-file: #Copy mastercard encryption .p12 file in src/main/resources and set value as classpath:nameOfYourMastercardtEncryptionP12File.p12
+      keystore-alias: # Alias of your key.
+      keystore-password: # Password of your Keystore.

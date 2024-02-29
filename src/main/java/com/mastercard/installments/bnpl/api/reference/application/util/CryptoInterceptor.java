@@ -25,7 +25,8 @@ public class CryptoInterceptor extends OkHttpJweInterceptor {
         Request encryptedRequest = this.handleRequest(chain.request());
         Response encryptedResponse = chain.proceed(encryptedRequest);
         try {
-            if (encryptedRequest.url().toString().contains("plans")) {
+            if ((encryptedRequest.url().toString().contains("plans")) || (encryptedRequest.url().toString().contains("merchants/participations"))
+                    || (encryptedRequest.url().toString().contains("merchants/mids/searches")) ){
                 return this.handleResponse(encryptedResponse);
             }
         } catch (EncryptionException e) {

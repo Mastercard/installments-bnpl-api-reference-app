@@ -24,7 +24,7 @@
         <commons-lang3-version>3.12.0</commons-lang3-version>
         <javax-validation-version>2.0.1.Final</javax-validation-version>
         <client-encryption-version>1.7.6</client-encryption-version>
-        <openapi-generator-version>6.2.1</openapi-generator-version>
+        <openapi-generator-version>6.6.0</openapi-generator-version>
         <findbugs-version>3.0.2</findbugs-version>
         <jacoco-version>0.8.8</jacoco-version>
         <javax-ws-rs-version>2.1.1</javax-ws-rs-version>
@@ -125,14 +125,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
