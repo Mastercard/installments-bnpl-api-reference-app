@@ -5,13 +5,16 @@ mastercard:
     environment:
       base-path: https://sandbox.api.mastercard.com/installments  # Refers to sandbox endpoint
     authentication:
-      key-file: classpath:nameOfYourP12File.p12 # Copy .p12 file in src/main/resources and set value as classpath:nameOfYourP12File.p12
-      consumer-key: your-consumer-key # Copy the Consumer key from "Sandbox/Production Keys" section on your project page
+      key-file: classpath:PII Encryption New Client-production-signing.p12 # Copy .p12 file in src/main/resources and set value as classpath:nameOfYourP12File.p12
+      consumer-key: i4NlntCoT34QJzNNnBn6l2MxidYcbWwjVKJIVlT-50154020!0f564fad5c5d4f93a937b77ed65778340000000000000000 #mitC_zOpuFY5CEbkA3G-jsozmTZDy0I75q9f3RhD269aa2a3!2789071a1c37452e93424d20b6192b810000000000000000 # Copy the Consumer key from "Sandbox/Production Keys" section on your project page
       keystore-alias: keyalias  # Alias of your key. Default key alias for sandbox is keyalias
-      keystore-password: your-keystore-password # Password of your Keystore. Default keystore password for sandbox project is keystorepassword
+      keystore-password: keystorepassword1 # Password of your Keystore. Default keystore password for sandbox project is keystorepassword
     encryption:
-      key-file: classpath:nameOfYourClientEncryptionPemFile.pem  #Copy client encryption .pem file in src/main/resources and set value as classpath:nameOfYourClientEncryptionPemFile.pem
+      key-file: classpath:mastercard-installments-api-clientenc1703586135967-client-encryption-key.pem  #Copy client encryption .pem file in src/main/resources and set value as classpath:nameOfYourClientEncryptionPemFile.pem
     decryption:
-      key-file: classpath:your-mastercard-encryption-key.p12 #Copy mastercard encryption .p12 file in src/main/resources and set value as classpath:nameOfYourMastercardtEncryptionP12File.p12
+      key-file: classpath:mastercard-installments-api-keyalias-mastercard-encryption-key.p12 #Copy mastercard encryption .p12 file in src/main/resources and set value as classpath:nameOfYourMastercardtEncryptionP12File.p12
       keystore-alias: keyalias
-      keystore-password: your-encryption-keystore-password
+      keystore-password: keystorepassword1
+
+server:
+  port : 8081
