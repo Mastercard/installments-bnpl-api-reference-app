@@ -96,7 +96,7 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
 
 ## Use-Cases <a name="use-cases"></a>
 1. **Merchant Participation**   
-Provides information on partner merchants with product code and IPP relationship.
+Provides ability for Acquirers to submit details on participating and non-participating MID merchants with mastercard installments. Also Acquirers will have ability to retrieve the effectuating status of the details shared with mastercard. IPP will have ability to retrieve MAID/MID based merchants participating information by territory with mastercard installments.
 
 **Note**: For PII countries(like GBR) where we need to pass the JWE encrypted payload to Merchant Participation APIs, this reference app has capability to do JWE encryption before sending the request. If we are directly calling API, one may need to explicitly encrypt and send the request(Refer MerchantParticipationInterceptor class).  
 
