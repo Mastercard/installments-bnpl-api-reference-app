@@ -96,7 +96,7 @@ JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
 
 ## Use-Cases <a name="use-cases"></a>
 1. **Merchant Participation**   
-Provides information on partner merchants with product code and IPP relationship.
+Provides ability for Acquirers to submit details on participating and non-participating MID merchants with mastercard installments. Also Acquirers will have ability to retrieve the effectuating status of the details shared with mastercard. IPP will have ability to retrieve MAID/MID based merchants participating information by territory with mastercard installments.
 
 **Note**: For PII countries(like GBR) where we need to pass the JWE encrypted payload to Merchant Participation APIs, this reference app has capability to do JWE encryption before sending the request. If we are directly calling API, one may need to explicitly encrypt and send the request(Refer MerchantParticipationInterceptor class).  
 
@@ -123,6 +123,8 @@ More details can be found [here](https://developer.mastercard.com/installments-f
         - Use any REST API based Client to test the functionality. Below is the API exposed by this application:       
 
                 - GET <Host>/demo/merchants-participations
+                - POST <Host>/demo/merchants-participations
+                - POST <Host>/demo/merchants/mids/searches
                 - POST <Host>/demo/approvals?sync=true
                 - POST <Host>/demo/approvals?sync=false
                 - GET <Host>/demo/approvals/{plan_id}
@@ -142,7 +144,7 @@ Please send an email to **apisupport@mastercard.com** with any questions or feed
 
 
 ## License <a name="license"></a>
-<p>Copyright 2022 Mastercard</p>
+<p>Copyright 2024 Mastercard</p>
 <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
 the License. You may obtain a copy of the License at:</p>
 <pre><code>   http://www.apache.org/licenses/LICENSE-2.0
