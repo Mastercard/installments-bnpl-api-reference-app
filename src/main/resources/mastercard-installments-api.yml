@@ -36,7 +36,10 @@ paths:
         - Merchants Participation
       summary: Allows a registered partner to create or update merchant participation details
       description:
-        Allows registered partners to submit merchant participation details. Merchant participation states that a merchant has opted in or opted out from Buy Now Pay Later. This endpoint allows the client to create a merchant with participation. A unique merchant will be a combination of acquirerICA, merchantLegalName, and countryCode. This endpoint also allows the updating of existing merchant participation information like adding more mids in a merchant object, changing the value of the opt-In flag, updating address fields, and updating wallet information. The acquirerICA, merchantLegalName, and countryCode fields are used to identify an existing merchant. If the merchant is already present, the mids provided in the request will be appended to the existing set of mids. The duns, dbaNames and websiteUrl fields cannot be updated hence these fields either must be null or empty or they must be the same as existing one in the update request otherwise this API will throw a 400 bad request error.  Once the request is validated and accepted, this API returns the ID of this request in the 'request_id' response header, and the request will be processed asynchronously. Use the GET /merchants/participation endpoint to check the status of the request by using the request_id. When submitting a participation request, the end user can initiate calls with various numbers of merchants and MIDs. However, it's crucial to ensure that the total payload size remains under 700 MB, as the API will generate an error otherwise.
+        Allows registered partners to submit merchant participation details. Merchant participation states that a merchant has opted in or opted out from Buy Now Pay Later. This endpoint allows the client to create a merchant with participation. A unique merchant will be a combination of acquirerICA, merchantLegalName, and countryCode. This endpoint also allows the updating of existing merchant participation information like adding more mids in a merchant object, changing the value of the opt-In flag, updating address fields, and updating wallet information. The acquirerICA, merchantLegalName, and countryCode fields are used to identify an existing merchant. If the merchant is already present, the mids provided in the request will be appended to the existing set of mids. The duns, dbaNames and websiteUrl fields cannot be updated hence these fields either must be null or empty or they must be the same as existing one in the update request otherwise this API will throw a 400 bad request error. Once the request is validated and accepted, this API returns the ID of this request in the 'request_id' response header, and the request will be processed asynchronously. Use the GET /merchants/participation endpoint to check the status of the request by using the request_id. When submitting a participation request, the end user can initiate calls with various numbers of merchants and MIDs. However, it's crucial to ensure that the total payload size remains under 700 KB, as the API will generate an error otherwise.
+        <br>
+        <br>
+        In the case of countries where merchant data is classified as PII, the data pertaining to merchantLegalName, dbaNames, and address must be encrypted, and the encrypted values should be assigned to the 'encryptedValues' field. For countries where merchant data is not classified as PII, there is no need to populate the 'encryptedValues' field. Instead, populate the individual fields, namely merchantLegalName, dbaNames, and address.
       operationId: postMerchantParticipations
       requestBody:
         $ref: '#/components/requestBodies/MerchantParticipations'
@@ -527,6 +530,7 @@ components:
       maxItems: 30
       description:
         List of merchant participation reference objects.
+      required: [merchantLegalName,countryCode,acquirerICA,encryptedValues]
       items:
         type: object
         properties:
@@ -586,6 +590,7 @@ components:
       type: object
       description: Parameters to search mid for a given merchant.
       required:
+        - merchantLegalName
         - countryCode
         - acquirerICA
       properties:
@@ -605,6 +610,7 @@ components:
       type: object
       description: Parameters to search mid for a given merchant. Merchant legal name is encrypted for the countries where encryption is needed.
       required:
+        - encryptedMerchantLegalName
         - countryCode
         - acquirerICA
       properties:
@@ -626,6 +632,7 @@ components:
       type: object
       description: Merchant participation reference having merchantLegalName, dbaNames, and address are contained and encrypted in an object.
       required:
+        - encryptedValues
         - countryCode
         - acquirerICA
       properties:
@@ -651,6 +658,7 @@ components:
       type: object
       description: Merchant participation reference
       required:
+        - merchantLegalName
         - countryCode
         - acquirerICA
       properties:
