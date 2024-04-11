@@ -12,7 +12,7 @@ public class EncryptMerchant {
   private String merchantLegalName;
   private List<String> dbaNames;
   private Address address;
-  private String encryptedMerchantLegalName;
+  private String encryptedValues;
 
   public EncryptMerchant(){
 

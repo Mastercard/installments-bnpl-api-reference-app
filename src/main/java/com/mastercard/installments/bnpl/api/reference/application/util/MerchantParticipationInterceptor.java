@@ -64,7 +64,7 @@ public class MerchantParticipationInterceptor extends OkHttpJweInterceptor {
       mer.setMerchantLegalName(null);
       mer.setDbaNames(null);
       mer.setAddress(null);
-      mer.setEncryptedValues(encryptedMerchant.getEncryptedMerchantLegalName());
+      mer.setEncryptedValues(encryptedMerchant.getEncryptedValues());
     } catch (EncryptionException e) {
       throw new RuntimeException(e);
     }

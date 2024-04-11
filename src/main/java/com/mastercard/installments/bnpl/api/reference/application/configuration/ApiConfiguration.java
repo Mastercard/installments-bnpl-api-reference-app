@@ -170,7 +170,7 @@ public class ApiConfiguration {
             config = JweConfigBuilder.aJweEncryptionConfig()
                     .withEncryptionCertificate(encryptionCertificate)
                     .withEncryptionPath("$", "$")
-                    .withEncryptedValueFieldName("encryptedMerchantLegalName")
+                    .withEncryptedValueFieldName("encryptedValues")
                     .build();
             return config;
         } catch (GeneralSecurityException | IOException | EncryptionException e) {
